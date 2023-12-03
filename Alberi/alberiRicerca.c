@@ -1,7 +1,8 @@
 #include "stdio.h"
 #include "alberi.h"
+#include "alberiRicerca.h"
 
-//Tutte queste funzioni hanno tempo lineare sull'altezza. In media, l'altezza è logaritmica sul numero di nodi dell'albero.
+//Tutte queste funzioni hanno tempo lineare sull'altezza. In generale, l'altezza è logaritmica sul numero di nodi dell'albero.
 //Attenzione: in caso di un albero degenere (cioé una lista) l'altezza è lineare sul numero di nodi.
 
 //Ricerca su albero ordinato.
@@ -100,24 +101,24 @@ struct Tree * Insert (struct Tree * T, TIPO k)
     return T;
 }
 
-//Cancellazione. Fa uso di una funzione ausiliaria: DeleteRoot
+//Cancellazione.
+//Algoritmo analogo all'inserimento.
+//Fa uso di una funzione ausiliaria: DeleteRoot.
 struct Tree * Delete (struct Tree * T, TIPO k)
 {
     if (T != NULL) //T arriva a Null quando k non è nell'albero.
     {
-        if (k > T->key)
+        if (k == T->key) //Caso base: k è stato trovato. 
+        {
+            T = DeleteRoot(T); //Elimina questo nodo preservando le proprietá di ordinamento e i sottoalberi figli.
+        }
+        else if (k > T->key)
         {
             T->right = Delete (T->right, k);
         }
         else if (k < T->key)
         {
             T->left = Delete (T->left, k);
-        }
-
-        //Caso base: k è stato trovato. 
-        else if (T->key == k) 
-        {
-            T = DeleteRoot(T); //Elimina questo nodo preservando le proprietá di ordinamento e i sottoalberi figli.
         }
     }
     return T;

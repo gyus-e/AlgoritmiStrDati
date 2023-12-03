@@ -100,3 +100,12 @@ TIPO Eval (struct Tree * T)
     }
     return ret;
 }
+
+struct Tree * NewNode (TIPO k)
+{
+    struct Tree * nuovo = (struct Tree *) malloc (sizeof(struct Tree));
+    nuovo->key=k;
+    nuovo->left=NULL;
+    nuovo->right=NULL;
+    return nuovo;
+}
