@@ -1,6 +1,3 @@
-#include "stdio.h"
-#include "stdlib.h"
-
 #ifndef ALBERI_H_
 #define ALBERI_H_
 

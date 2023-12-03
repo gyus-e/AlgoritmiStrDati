@@ -104,6 +104,7 @@ struct Tree * Insert (struct Tree * T, TIPO k)
 //Cancellazione.
 //Algoritmo analogo all'inserimento.
 //Fa uso di una funzione ausiliaria: DeleteRoot.
+//Fa uso di stack. Per la versione senza stack, vedere DeleteTR.
 struct Tree * Delete (struct Tree * T, TIPO k)
 {
     if (T != NULL) //T arriva a Null quando k non è nell'albero.
@@ -178,4 +179,36 @@ struct Tree * StaccaMin (struct Tree * T, struct Tree * Pred)
         }
     }
     return T; //restituisce il nodo minimo (non piú presente nell'albero)
+}
+
+//Delete Tail Rercursive.
+//Necessario un puntatore al padre.
+void DeleteTR (struct Tree * T, TIPO k, struct Tree * Pred)
+{
+    if (T != NULL)
+    {
+        if (k == T->key) 
+        {
+            //Non possiamo piú restituire un valore da assegnare a T: dobbiamo salvare l'albero restituito da DeleteRoot in una variabile temporanea
+            struct Tree * newT = DeleteRoot(T);
+            //Quindi dobbiamo metterla al posto giusto nell'albero (per questo serve indicare anche il padre)
+            if (T == Pred->left)
+            {
+                Pred->left = newT;
+            }
+            else
+            {
+                Pred->right = newT;
+            }
+        }
+        else if (k > T->key)
+        {
+            DeleteTR (T->right, k, T);
+        }
+        else if (k < T->key)
+        {
+            DeleteTR (T->left, k, T);
+        }
+    }
+    return;
 }

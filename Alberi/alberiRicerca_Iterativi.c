@@ -61,6 +61,7 @@ struct Tree * Successore_Iterativo (struct Tree * T, TIPO k)
     return ret;
 }
 
+//Versione ottimizzata sulla memoria: non usa stack
 struct Tree * Insert_Iterativo (struct Tree * T, TIPO k)
 {
     struct Tree * curr = T, * pred = NULL;
@@ -94,4 +95,4 @@ struct Tree * Insert_Iterativo (struct Tree * T, TIPO k)
     return T;
 }
 
-//Il Delete iterativo non è stato spiegato
+//Il Delete iterativo non è stato spiegato. Vedere DeleteTR per una versione ottimizzata sulla memoria.
