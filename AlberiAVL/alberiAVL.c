@@ -1,4 +1,5 @@
 #include "stdio.h"
+#include "stdlib.h"
 #include "alberiAVL.h"
 
 //L'inserimento è analogo alla versione su alberi binari di ricerca. Bisogna solo assicurarsi di bilanciare il sottoalbero modificato.

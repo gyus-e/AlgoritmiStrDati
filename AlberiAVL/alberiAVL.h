@@ -1,6 +1,3 @@
-#include "stdio.h"
-#include "stdlib.h"
-
 #ifndef ALBERIAVL_H_
 #define ALBERIAVL_H_
 
@@ -42,5 +39,6 @@ struct Tree * NewNode (TIPO);
 int height (struct Tree *);
 
 //Gli alberi AVL sono un caso particolare degli alberi binari di ricerca. Le funzioni di search, max, min e successore sono le stesse.
+//Le versioni iterative di questi algoritmi non porterebbero vantaggi sulla memoria: sarebbe comunque necessario uno stack di costo lineare sull'altezza.
 
 #endif
