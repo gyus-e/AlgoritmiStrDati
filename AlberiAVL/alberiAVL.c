@@ -4,7 +4,7 @@
 
 //L'inserimento è analogo alla versione su alberi binari di ricerca. Bisogna solo assicurarsi di bilanciare il sottoalbero modificato.
 //Fa uso di due funzioni ausiliarie: BilanciaSX e BilanciaDX. 
-//Le funzioni vengono chiamate a ogni chiamata ricorsiva, ma sono definite in modo da non effettuare operazioni dopo aver bilanciato l'albero.
+//Le funzioni vengono chiamate a ogni chiamata ricorsiva, ma non hanno bisogno di effettuare operazioni dopo aver bilanciato l'albero la prima volta.
 //Il tempo è lineare sull'altezza.
 struct Tree * InsertAVL (struct Tree * T, TIPO k)
 {
@@ -119,7 +119,7 @@ struct Tree * RotazioneDx (struct Tree * A)
 //In questo caso non ci sono garanzie che una violazione non venga trasmessa al padre dopo un'operazione di bilanciamento.
 //Dopo la cancellazione di un elemento, l'altezza dell'albero ruotato viene diminuita di 1.
 //Quindi l'altezza non torna al valore precedente.
-//Ne segue che le operazioni di bilanciamento potrebbero dover bilanciare anche i padri.
+//Ne segue che le operazioni di bilanciamento potrebbero doversi ripetere a ogni chiamata ricorsiva.
 //Nel caso peggiore, il numero di operazioni di bilanciamento necessarie sará lineare sull'altezza.
 struct Tree * DeleteAVL (struct Tree * T, TIPO k)
 {
