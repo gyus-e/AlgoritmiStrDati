@@ -1,10 +1,9 @@
 #ifndef ALBERI_RB_H_
 #define ALBERI_RB_H_
 
-//Le foglie sono nodi NIL, dal contenuto irrilevante.
+//Le foglie sono nodi NIL, dal contenuto irrilevante, ma di colore nero.
 //In questo modo, non è necessario distinguere tra un puntatore a un nodo e un puntatore Null.
-//Al posto di un puntatore NIL si usa un puntatore ad un nodo NIL.
-//Poiché il puntatore a una foglia non è Null, sará necessaria una funzione per capire se siamo in un nodo NIL
+//Al posto di un puntatore Null si usa un puntatore ad un nodo NIL.
 
 //PROPRIETÁ DI UN ALBERO RED-BLACK:
 //Ogni nodo è rosso o nero
@@ -28,6 +27,8 @@ struct Tree {
     char color;
 };
 
+const struct Tree Nil = {0, NULL, NULL, black}; //usiamo un unico valore per rappresentare tutti i nodi Nil
+
 //Il numero di nodi interni n di un (sotto-)albero radicato nel nodo x è:
 // n >= 2^(bh(x))-1     n+1 = 2^(bh(x))      log(n+1) = bh(x)
 //L'altezza nera di un nodo x deve essere maggiore o uguale alla metá dell'altezza di x: 
@@ -40,7 +41,6 @@ struct Tree {
 //In un albero RB con n nodi, inserimenti, ricerche e cancellazioni hanno tutte tempo logaritmico su n
 // t = O(log(n))
 
-int isNil (struct Tree * T); 
 struct Tree * NewNode (TIPO k);
 
 struct Tree * InsertRB (struct Tree * T, TIPO k);
