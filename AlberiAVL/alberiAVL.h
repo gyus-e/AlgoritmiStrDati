@@ -28,6 +28,7 @@ struct Tree * InsertAVL (struct Tree * , TIPO );
 
 struct Tree * BilanciaSx (struct Tree * );
 struct Tree * BilanciaDx (struct Tree * );
+
 struct Tree * RotazioneSx (struct Tree * );
 struct Tree * RotazioneDx (struct Tree * );
 
@@ -35,10 +36,10 @@ struct Tree * DeleteAVL (struct Tree * , TIPO );
 struct Tree * DeleteRootAVL (struct Tree *);
 struct Tree * StaccaMinAVL (struct Tree * , struct Tree * );
 
-struct Tree * NewNode (TIPO);
+struct Tree * NewNodeAVL (TIPO);
 int height (struct Tree *);
 
 //Gli alberi AVL sono un caso particolare degli alberi binari di ricerca. Le funzioni di search, max, min e successore sono le stesse.
-//Le versioni iterative di questi algoritmi non porterebbero vantaggi sulla memoria: sarebbe comunque necessario uno stack di costo lineare sull'altezza.
+//Le versioni iterative di questi algoritmi non porterebbero vantaggi sulla memoria: sarebbe comunque necessario uno stack di dimensione lineare sull'altezza.
 
 #endif

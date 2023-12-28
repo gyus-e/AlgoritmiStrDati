@@ -10,7 +10,7 @@ struct Tree * InsertAVL (struct Tree * T, TIPO k)
 {
     if (T == NULL)
     {
-        T = NewNode (k);
+        T = NewNodeAVL (k);
     }
     else
     {
@@ -174,7 +174,7 @@ struct Tree * DeleteRootAVL (struct Tree * T)
 //Occorre usare una variabile temporanea.
 struct Tree * StaccaMinAVL (struct Tree * T, struct Tree * Pred)
 {
-    struct Tree * min;
+    struct Tree * min = T;
     if (T != NULL)
     {
         if (T->left != NULL)
@@ -201,7 +201,7 @@ struct Tree * StaccaMinAVL (struct Tree * T, struct Tree * Pred)
     return min;
 }
 
-struct Tree * NewNode (TIPO k)
+struct Tree * NewNodeAVL (TIPO k)
 {
     struct Tree * nuovo = (struct Tree *) malloc (sizeof(struct Tree));
     nuovo->key=k;

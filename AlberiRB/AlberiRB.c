@@ -4,7 +4,7 @@
 
 //Per non violare le proprietá dell'albero, coloreremo il nuovo nodo di rosso.
 //In questo modo saremo certi di poter generare una violazione solo se il padre del nuovo nodo è rosso. (Cioé, se il padre è nero non dobbiamo preoccuparci di bilanciare l'altezza nera)
-struct Tree * NewNode (TIPO k)
+struct Tree * NewNodeRB (TIPO k)
 {
     struct Tree * T = malloc (sizeof (struct Tree));
     T->key = k;
@@ -25,7 +25,7 @@ struct Tree * InsertRB (struct Tree * T, TIPO k)
 {
     if (T == & Nil) //T punta al nodo Nil, siamo in una foglia
     {
-        T = NewNode (k); //T ora punterá al nuovo nodo allocato
+        T = NewNodeRB (k); //T ora punterá al nuovo nodo allocato
     }
     else
     {
@@ -173,7 +173,7 @@ int ViolazioneDx (struct Tree * T)
             }
         }
     }
-    //Se L è nero, oppure L è rosso ma ha solo figli neri, non c'è nessuna violazione.
+    //Se R è nero, oppure R è rosso ma ha solo figli neri, non c'è nessuna violazione.
     return violazione;
 }
 
@@ -195,4 +195,212 @@ struct Tree * RotazioneDx (struct Tree * A)
     B->left = A;
         
     return B;
+}
+
+//Cancellazione: analoga alla versione per alberi AVL
+//Stavolta bisogna bilanciare dallo stesso lato in cui si è fatta la cancellazione, perché è lí che troveremo la violazione (nodo doppio nero).
+struct Tree * DeleteRB (struct Tree * T, TIPO k)
+{
+    if (T != & Nil)
+    {
+        if (k == T->key)
+        {
+            T = DeleteRootRB(T); //l'operazione di bilanciamento viene fatta in DeleteRootRB
+        }
+        else if (k > T->key) //cancello a destra
+        {
+            T->right = DeleteRB (T->right, k);
+            T = BilanciaDx (T); //il doppio nero è a destra
+        }
+        else if (k < T->key) //cancello a sinistra
+        {
+            T->left = DeleteRB (T->left, k);
+            T = BilanciaSx (T); //il doppio nero è a sinistra
+        }
+    }
+    return T;
+}
+
+//Analogo alla versione per alberi AVL
+//Se ho cancellato un nodo nero, devo propagare il colore nero al nodo che lo sostituisce.
+//Funzione ausiliaria PropagateBlack: se il nodo è rosso, lo coloro di nero. Se è nero, diventerá DOPPIO NERO (provvisoriamente, fino al bilanciamento).
+struct Tree * DeleteRootRB(struct Tree * T)
+{
+
+    struct Tree * toDelete = T;
+    
+    if (T->left == &Nil)
+    {
+        T = T->right;
+        if (toDelete->color == black)
+        {
+            PropagateBlack (T);
+            //Posso avere un doppio nero in T
+            //La violazione verrá rilevata dal padre di T nella prossima chiamata ricorsiva di DeleteRB.
+            //Se T è la radice, non importa che sia nero o doppio nero
+        }
+    }
+
+    else if (T->right == &Nil)
+    {
+        T = T->left;
+        if (toDelete->color == black)
+        {
+            PropagateBlack (T);
+        }
+    }
+    
+    else
+    {
+        toDelete = StaccaMinRB (T->right, T);
+        //Abbiamo giá propagato il nero e bilanciato fino a T->right in StaccaMin
+        T->key = toDelete->key;
+        T = BilanciaDeleteDx (T);
+    }
+
+    free (toDelete);
+    toDelete = NULL;
+    
+    return T;
+}
+
+//Analogo alla versione per alberi RB.
+//Devo propagare il nero sul figlio del minimo, quindi bilanciare.
+struct Tree * StaccaMinRB (struct Tree * T, struct Tree * Pred)
+{
+    struct Tree * min = T;
+    if (T != &Nil)
+    {
+        if (T->left != &Nil)
+        {
+            min = StaccaMinRB (T->left, T);
+            if (T == Pred->left) //Sempre?
+            {
+                T = BilanciaDeleteSx (T);
+            }
+            else //T == Pred->right. Ma quando succede? Inserito comunque per robustezza?
+            {
+                T = BilanciaDeleteDx (T);
+            }
+        } 
+        else 
+        {
+            min = T;
+            if (Pred != NULL) 
+            {
+                if (min == Pred->left)
+                {
+                    Pred->left = min->right;
+                }
+                else
+                {  
+                    Pred->right = min->right;
+                }
+
+                //Se min è nero, devo propagare il nero.
+                if (min->color == black)
+                {
+                    PropagateBlack (min->right);
+                    //Posso avere un doppio nero in min->right
+                    //Quindi devo chiamare BilanciaDeleteDx su min prima di cancellarlo
+                    min = BilanciaDeleteDx (min);
+                }
+            //Il bilanciamento a sinistra su Pred viene eseguito al ritorno della chiamata ricorsiva.
+            //Se è stato eseguito subito il caso base, Pred viene bilanciato in DeleteRootRB.
+            }
+        }
+    }
+    return min;
+}
+
+void PropagateBlack (struct Tree * T)
+{
+    if (T->color == red)
+    {
+        T->color = black;
+    }
+    else
+    {
+        T->color = double_black;
+    }
+}
+
+int ViolazioneDeleteSx (struct Tree * Sx, struct Tree * Dx)
+{
+    //Quando trovo un nodo doppio nero, controllo il fratello
+    int violazione = 0;
+    if (Sx->color == double_black);
+    {
+        //Caso 1: il fratello è rosso
+        if (Dx->color == red)
+        {
+            violazione = 1;
+        }
+        //Caso 2: il fratello è nero e i suoi figli sono entrambi neri
+        else if (Dx->left->color == black && Dx->right->color == black)
+        {
+            violazione = 2;
+        }
+        //Caso 3: il fratello è nero, solo il suo figlio destro è nero (il sinistro è rosso)
+        else if (Dx->right->color == black) //Dx->left è rosso
+        {
+            violazione = 3;
+        }
+        //Caso 4: il fratello è nero, il suo figlio destro è rosso (il sinistro puó essere sia rosso che nero)
+        else
+        {
+            violazione = 4;
+        }
+    }
+    return violazione;
+}
+
+struct Tree * BilanciaDeleteSx (struct Tree * T)
+{
+    //Non importa di che colore sia T. 
+    //La violazione viene rilevata quando T->left è doppio nero.
+    if (T->right != &Nil)
+    {
+        switch (ViolazioneDeleteSx (T->left, T->right))
+        {
+            case 1: //T->right è rosso (quindi suo padre T e i suoi figli sono per forza neri)
+            //La rotazione sposta il doppio nero piú in basso lungo il sottoalbero sinistro.
+            T=RotazioneDx (T); 
+            T->left->color = red; //il nuovo T->left è il vecchio T, nero. Possiamo colorarlo di rosso perché i suoi figli sono il nodo doppio nero e uno dei figli del vecchio T->right.
+            T->color = black; //il nuovo T è il vecchio T->right, rosso. Dobbiamo colorarlo di nero.
+            //Devo richiamare l'algoritmo sul nuovo T->left.
+            T->left = BilanciaDeleteSx (T->left);
+            break;
+
+            case 2: //T->right è nero e ha entrambi i figli neri
+            //Spostiamo il nero da T->left a T. Se T era nero, l'algoritmo verrá richiamato piú avanti.
+            PropagateBlack (T);
+            T->left->color = black;
+            //Poiché T->right ha due figli neri, possiamo cororarlo di rosso, in modo da mantenere l'altezza nera dei nodi del sottoalbero destro.
+            T->right->color = red; 
+            break;
+
+            case 3: //T->right è nero, il suo figlio destro è nero, il suo figlio sinistro è rosso
+            //Rotazione e cambio colori per ricondurre al caso 4
+            T->right = RotazioneSx (T->right);
+            T->right->color = black;
+            T->right->right->color = red;
+            //siamo nel caso 4
+            T = RotazioneSx (T);
+            T->right->color = T->color;
+            T->color = T->left->color;
+            T->left->color = black;
+            T->left->left->color = black;
+            break;
+
+            case 4: //T->right è nero, il suo figlio destro è rosso
+            T = RotazioneSx (T);
+            T->right->color = T->color; //La rotazione ha tolto un nero dal sottoalbero destro
+            T->color = T->left->color; //T, che è nero, prende il colore di T->left, la vecchia radice
+            T->left->color = black; //Lo scopo della rotazione era aggiungere un nero al sottoalbero sinistro. Se T->left era rosso, lo coloro di nero.
+            T->left->left->color = black; //il nodo doppio nero a questo punto puó tornare nero.
+            break;
+        }
+    }
+    return T;
 }
