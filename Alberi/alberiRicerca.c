@@ -192,13 +192,16 @@ void DeleteTR (struct Tree * T, TIPO k, struct Tree * Pred)
             //Non possiamo piú restituire un valore da assegnare a T: dobbiamo salvare l'albero restituito da DeleteRoot in una variabile temporanea
             struct Tree * newT = DeleteRoot(T);
             //Quindi dobbiamo metterla al posto giusto nell'albero (per questo serve indicare anche il padre)
-            if (T == Pred->left)
+            if (Pred != NULL)
             {
-                Pred->left = newT;
-            }
-            else
-            {
-                Pred->right = newT;
+                if (T == Pred->left)
+                {
+                    Pred->left = newT;
+                }
+                else
+                {
+                    Pred->right = newT;
+                }
             }
         }
         else if (k > T->key)
