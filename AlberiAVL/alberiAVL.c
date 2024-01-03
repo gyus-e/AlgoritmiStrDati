@@ -29,9 +29,7 @@ struct Tree * InsertAVL (struct Tree * T, TIPO k)
 }
 
 //I due algoritmi di bilanciamento fanno uso di funzioni ausiliarie di rotazione.
-//Se la rotazione viene chiamata in caso di violazione, l’altezza dell’albero tornerá uguale a quella che aveva prima dell’inserimento.
-//Segue che bisogna effettuare la rotazione solo sul nodo in cui è stata scoperta la violazione.
-//Poiché le rotazioni hanno tempo costante, anche questi algoritmi hanno tempo costante.
+//Poiché le rotazioni hanno tempo costante, anche il bilanciamento ha tempo costante.
 struct Tree * BilanciaSx (struct Tree * T) 
 {
     if (T != NULL)
@@ -39,17 +37,19 @@ struct Tree * BilanciaSx (struct Tree * T)
         if ((height(T->left) - height(T->right)) > 1) //Abbiamo inserito in T->left, quindi sará lui ad avere l'altezza piú grande
         {
             //Sappiamo giá che T->left sará diverso da Null
-            if (height(T->left->left) > height(T->left->right)) //La violazione viene da un inserimento nel sottoalbero sinistro di T->left
+            if (height(T->left->left) > height(T->left->right)) //Se la violazione viene da un inserimento nel sottoalbero sinistro di T->left
             {
                 T = RotazioneSx (T);
             }
-            else  //La violazione viene da un inserimento nel sottoalbero destro di T->left
+            else  //Se la violazione viene da un inserimento nel sottoalbero destro di T->left
             {
                 T->left = RotazioneDx (T->left); //In T->left, spostiamo il peso del sottoalbero destro in quello sinistro
                 T = RotazioneSx (T); //Possiamo operare come nel caso precedente
             }
+            //Dopo la rotazione, l’altezza dell’albero tornerá uguale a quella che aveva prima dell’inserimento.
+
         }
-        else //non c'è violazione
+        else //non c'è violazione. È necessario aggiornare l'altezza dei nodi.
         {
             T->h = 1 + sup (height(T->left), height(T->right));
             return T;
@@ -92,10 +92,10 @@ struct Tree * RotazioneSx (struct Tree * A)
     //Il valore di A è maggiore di quello di B
 
     A->left = B->right; //Il figlio destro di B diventa il figlio sinistro di A 
-    //Ordine rispettato: ogni elemento del sottoalbero destro di B ha un valore compreso tra B e A
+    //Ordine rispettato: ogni elemento del sottoalbero destro di B ha un valore maggiore di B e minore di A
 
     B->right = A; //A diventa il figlio destro di B 
-    //Ordine rispettato: i valori di A e di tutti i suoi figli sono piú grandi del valore di B
+    //Ordine rispettato: i valori di A e di tutti i suoi figli sono maggiori del valore di B
     
     A->h = 1 + sup(height (A->left), height (A->right));
     B->h = 1 + sup(height (B->left), height (B->right));
@@ -162,7 +162,7 @@ struct Tree * DeleteRootAVL (struct Tree * T)
             T->key = toDelete->key;
             //T->right = BilanciaDx (T->right); 
             //Questo è stato fatto in StaccaMinAVL
-            T = BilanciaSx (T); //La violazione sul padre sará a sinistra perché abbiamo rimosso un elemento a destra
+            T = BilanciaSx (T); //Il peso sul padre sará a sinistra perché abbiamo rimosso il minimo a destra.
         }
         free (toDelete);
         toDelete = NULL;
