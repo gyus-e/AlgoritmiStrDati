@@ -96,3 +96,75 @@ struct Tree * Insert_Iterativo (struct Tree * T, TIPO k)
 }
 
 //Il Delete iterativo non è stato spiegato. Vedere DeleteTR per una versione ottimizzata sulla memoria.
+//In alternativa propongo una mia implementazione.
+
+struct Tree * Delete_Iterativo (struct Tree * T, TIPO k)
+{
+    if (T != NULL)
+    {
+        struct Tree * Tcurr = T;
+        while (Tcurr != NULL) 
+        {
+            if (k == Tcurr->key)
+            {
+                Tcurr = DeleteRoot(Tcurr);
+            }
+            else if (k > Tcurr->key)
+            {
+                Tcurr = Tcurr->right;
+            }
+            else if (k < T->key)
+            {
+                Tcurr = Tcurr->left;
+            }
+        }
+    }
+    return T;
+}
+
+//DeleteRoot è giá iterativo. Cambia solo StaccaMin.
+struct Tree * DeleteRoot_Iterativo (struct Tree * T)
+{
+        struct Tree * toDelete = T;
+
+        if (T->left == NULL)
+        {   
+            T = T->right;
+        }
+        else if (T->right == NULL)
+        {
+            T = T->left;
+        }
+        else
+        {
+            toDelete = StaccaMin_Iterativo (T->right, T);
+            T->key = toDelete->key;
+        }
+        free (toDelete);
+        toDelete = NULL;
+        return T;
+}
+//Analogo alla ricerca del minimo iterativa
+struct Tree * StaccaMin_Iterativo (struct Tree * T, struct Tree * Pred)
+{
+    struct Tree * min = T;
+    while (min != NULL && min->left != NULL)
+    {
+        Pred = min;
+        min = min->left;
+    }
+
+    if (Pred != NULL)
+    {
+        if (min == Pred->left)
+        {
+            Pred->left = min->right;
+        }
+        else if (min == Pred->right)
+        {
+            Pred->right = min->right;
+        }
+    }
+
+    return min;
+}
