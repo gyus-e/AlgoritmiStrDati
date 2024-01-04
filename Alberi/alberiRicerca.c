@@ -183,6 +183,7 @@ struct Tree * StaccaMin (struct Tree * T, struct Tree * Pred)
 
 //Delete Tail Rercursive.
 //Necessario un puntatore al padre.
+//Non funziona se viene chiamato sulla radice: serve una funzione dedicata per la radice che chiamerá il DeleteTR sui sottoalberi figli.
 void DeleteTR (struct Tree * T, TIPO k, struct Tree * Pred)
 {
     if (T != NULL)
@@ -192,7 +193,7 @@ void DeleteTR (struct Tree * T, TIPO k, struct Tree * Pred)
             //Non possiamo piú restituire un valore da assegnare a T: dobbiamo salvare l'albero restituito da DeleteRoot in una variabile temporanea
             struct Tree * newT = DeleteRoot(T);
             //Quindi dobbiamo metterla al posto giusto nell'albero (per questo serve indicare anche il padre)
-            if (Pred != NULL)
+            if (Pred != NULL) //Controllo inutile grazie alla funzione DeleteTR_Root, ma aggiunto per robustezza
             {
                 if (T == Pred->left)
                 {
@@ -214,4 +215,24 @@ void DeleteTR (struct Tree * T, TIPO k, struct Tree * Pred)
         }
     }
     return;
+}
+
+struct Tree * DeleteTR_Root (struct Tree * T, TIPO k)
+{
+    if (T != NULL)
+    {
+        if (k == T->key)
+        {
+            T = DeleteRoot (T);
+        }
+        else if (k > T->key)
+        {
+            DeleteTR (T->right, k, T);
+        }
+        else if (k < T->key)
+        {
+            DeleteTR (T->left, k, T);
+        }
+    }
+    return T;
 }
