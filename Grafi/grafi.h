@@ -43,7 +43,7 @@ void StampaPercorsoMinimo (struct Grafo * G, struct Vertice * S, struct Vertice 
 void Init_DFS (struct Grafo * G);
 void DFS (struct Grafo * G);
 void DFS_Visit (struct Grafo * G, struct Vertice * S);
-//La DFS genera la Foresta Depth-First: un insieme di alberi, che insieme contengono tutti gli archi del grafo.
+//La DFS genera la Foresta Depth-First.
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //TEOREMA DELLA STRUTTURA A PARENTESI:
@@ -67,10 +67,26 @@ void DFS_Visit (struct Grafo * G, struct Vertice * S);
 //              SE E SOLO SE
 //All'istante T_Scoperta [V] ESISTE un percorso in G fatto di soli vertici bianchi da V a U
 
-//Tramite la DFS è possibile partizionare gli archi del grafo in 4 tipi.
+//Tramite la DFS è possibile partizionare gli archi del grafo in 4 tipi:
+//  -Archi dell'albero
+//  -Archi all'indietro
+//  -Archi in avanti
+//  -Archi di attraversamento
 void PartizionaArchi (struct Grafo * G, struct Vertice * S);
 //In particolare, trovare archi all'indietro ci permette di individuare la presenza di cicli nel grafo.
 bool Aciclico (struct Grafo * G);
 bool Aciclico_Visit (struct Grafo * G, struct Vertice * S);
+
+//Un ordinamento topologico è una relazione d'ordine totale, definita come segue:
+//Per ogni arco del grafo, se l'arco è della forma (v, u), allora v precede u nell'ordinamento.
+
+//TEOREMA: se G è aciclico, esiste almeno un ordinamento topologico di G
+
+//Per costruire un ordinamento topologico, bisogna conoscere il grado entrante di tutti i vertici (cioé il numero di archi che vanno verso un vertice).
+int * GradoEntrante (struct Grafo * G);
+void OrdinamentoTopologico (struct Grafo * G);
+
+//L'ordinamento inverso puó essere individuato dalla DFS 
+void OrdinamentoTopologico_DFS (struct Grafo * G);
 
 #endif

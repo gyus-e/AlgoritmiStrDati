@@ -105,6 +105,7 @@ void DFS_Visit (struct Grafo * G, struct Vertice * S)
     Color [S->key] = black;
 }
 
+//Esempio di DFS
 void PartizionaArchi (struct Grafo * G, struct Vertice * S)
 {
     Color [S->key] = gray;
@@ -142,6 +143,7 @@ void PartizionaArchi (struct Grafo * G, struct Vertice * S)
     Color [S->key] = black;
 }
 
+//Altro esempio di DFS
 bool Aciclico (struct Grafo * G)
 {
     Init_DFS (G);
@@ -175,8 +177,60 @@ bool Aciclico_Visit (struct Grafo * G, struct Vertice * S)
             {
                 ret = false; //Sono arrivato a S partendo da W, e ora ritorno a W: esistono cicli.
             }
-        }   
+            //Se W è nero, non ci sono cicli perché W non ha raggiunto S 
+        } 
     }
     Color [S->key] = black;
     return ret;
+}
+
+int * GradoEntrante (struct Grafo * G)
+{
+    int * GE = (int) malloc (G->V_Sz * sizeof (int));
+    //inizializzazione array
+    for (int i = 0; i < G->V_Sz; i++)
+    {
+        GE[i] = 0;
+    }
+    //calcolo grado entrante
+    for (int j = 0; j < G->V_Sz; j++) //per ogni vertice del grafo
+    {
+        struct Vertice * J = G->v[j];
+        for (struct Vertice * U = J->next; U != NULL; U = U->next) //per ogni vertice adiacente a J
+        {
+            GE[U->key]++; //ogni volta che trovo U, incremento il suo grado entrante di 1
+        }
+    }
+    return GE;
+}
+
+//Se un grafo è aciclico, esisterá almeno un vertice con grado entrante 0. Questo sará il primo vertice dell'ordinamento.
+//Togliendo quel vertice, il risultato sará un sottografo aciclico con un nuovo vertice di grado entrante 0.
+void OrdinamentoTopologico (struct Grafo * G)
+{
+    int * GE = GradoEntrante (G);
+    struct Queue * Q = NULL;
+    
+    for (int i = 0; i < G->V_Sz; i++) //per ogni vertice dell'albero
+    {
+        if (GE[i] == 0)
+        {
+            Q = enqueue (Q, G->v[i]); //accoda i vertici con grado entrante 0
+        }
+    }
+
+    while (Q != NULL)
+    {
+        struct Vertice * W = getHead (Q);
+        printf("%d\n", W->val);
+        for (struct Vertice * U = W->next; U != NULL; U = U->next) //per ogni vertice adiacente a W
+        {
+            GE[U->key]--; //riduci il grado entrante
+            if (GE[U->key] == 0)
+            {
+                Q = enqueue (Q, U); //se è arrivato a 0, accoda
+            }
+        }
+        Q = dequeue (Q);
+    }
 }
