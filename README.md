@@ -1,9 +1,5 @@
 # AlgoritmiStrDati
 
-#+OPTIONS: date:nil title:nil toc:nil author:nil
-#+STARTUP: overview
-* Algoritmi e Strutture Dati
-#+BEGIN_HTML
 <div align="center">
 
   <!-- License -->
@@ -33,7 +29,5 @@
              alt="Work on my machine"
       /></a>
 </div>
-#+END_HTML
-* About
 
-Implementazione in ~C~ degli algoritmi visti nel corso di Algoritmi e Strutture Dati tenuto dal Prof. Benerecetti.
+Implementazione in C degli algoritmi visti nel corso di Algoritmi e Strutture Dati tenuto dal Prof. Benerecetti.
