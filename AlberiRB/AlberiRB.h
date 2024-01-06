@@ -63,4 +63,16 @@ struct Tree * BilanciaDeleteSx (struct Tree * T);
 int ViolazioneDeleteDx (struct Tree * Sx, struct Tree * Dx);
 struct Tree * BilanciaDeleteDx (struct Tree * T);
 
+struct Tree * Caso1Sx (struct Tree * T);
+struct Tree * Caso1Dx (struct Tree * T);
+
+struct Tree * Caso2Sx (struct Tree * T);
+struct Tree * Caso2Dx (struct Tree * T);
+
+struct Tree * Caso3Sx (struct Tree * T);
+struct Tree * Caso3Dx (struct Tree * T);
+
+struct Tree * Caso4Sx (struct Tree * T);
+struct Tree * Caso4Dx (struct Tree * T);
+
 #endif
