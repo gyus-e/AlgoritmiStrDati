@@ -1,5 +1,6 @@
 #include "grafi.h"
 #include "queue_grafi.h"
+#include "stack_grafi.h"
 #include "stdio.h"
 
 void Init_BFS (struct Grafo * G)
@@ -17,9 +18,9 @@ void Init_BFS (struct Grafo * G)
     }
 }
 
-//I vertici non visitati sono bianchi. I vertici in coda sono grigi. I vertici visitati sono neri.
-//Aggiunge tutti i vertici adiacenti bianchi a una coda, settando il loro colore a grigio
-//Poi setta il colore del vertice visitato a nero e lo rimuove dalla coda.
+//Similmente alla BFS per gli alberi, sfrutta una coda. Ma deve poter riconoscere i vertici giá visitati.
+//Partendo da un vertice sorgente, aggiunge tutti i vertici adiacenti bianchi a una coda, settando il loro colore a grigio.
+//Poi setta il colore della sorgente a nero e la rimuove dalla coda.
 //Ripete l'operazione sul prossimo vertice in coda, finché la coda non si svuota.
 //Costo lineare sulla dimensione del grafo (vertici + archi)
 void BFS (struct Grafo * G, struct Vertice * S)
@@ -74,22 +75,27 @@ void Init_DFS (struct Grafo * G)
 }
 
 //Costo lineare sulla dimensione del grafo (vertici + archi)
-void DFS (struct Grafo * G)
+struct Stack ** DFS (struct Grafo * G)
 {
+    struct Stack ** DFS_Forest = malloc (G->V_Sz * sizeof(struct Stack *));
     Init_DFS (G);
+
     for (int i = 0; i < G->V_Sz; i++) //per ogni vertice del grafo
     {
-        if (Color[i] == white)
+        if (Color[i] == white) //se non è stato visitato
         {
-            DFS_Visit (G, G->v[i]); //DFS_Visit sul vertice
+            DFS_Forest [i] = DFS_Visit (G, G->v[i]); //DFS_Visit sul vertice
         }
     }
+
+    return DFS_Forest;
 }
 
-//Opzionalmente, salviamo il tempo di scoperta e di fine visita di ogni vertice in due array, e l'array dei predecessori. 
-void DFS_Visit (struct Grafo * G, struct Vertice * S)
+//Opzionalmente, possiamo salvare il tempo di scoperta e di fine visita di ogni vertice in due array, e l'array dei predecessori. 
+struct Stack * DFS_Visit (struct Grafo * G, struct Vertice * S)
 {
-    Color [S->key] = gray;
+    struct Stack * DFS_Tree = NULL;
+    Color [S->key] = gray; //la visita sul vertice è in corso
     T_Scoperta [S->key] = tempo++; //Salva il momento in cui la visita su S è iniziata. La variabile tempo va incrementata ogni volta che viene utilizzata.
 
     for (struct Vertice * W = S->next; W != NULL; W = W->next) //per ogni vertice adiacente a S
@@ -97,12 +103,16 @@ void DFS_Visit (struct Grafo * G, struct Vertice * S)
         if (Color [W->key] == white) //se il vertice non è stato visitato
         {
             Pred[W->key] = S; //salva il predecessore
-            DFS_Visit (G, W); //effettua la visita sul vertice
+            DFS_Tree = DFS_Visit (G, W, DFS_Tree); //effettua la visita sul vertice
         }
     }
+    
+    DFS_Tree = push (DFS_Tree, S); //Terminata l'esplorazione della sorgente, la inserisce nello Stack
 
     T_Fine [S->key] = tempo++; //Salva il momento in cui la visita su S è terminata.
-    Color [S->key] = black;
+    Color [S->key] = black; //la visita sul vertice è terminata
+
+    return DFS_Tree; //Lo stack è un albero della Foresta Depth-First: contiene in cima la sorgente, e a seguire i nodi esplorati a partire da essa.
 }
 
 //Esempio di DFS
@@ -233,4 +243,104 @@ void OrdinamentoTopologico (struct Grafo * G)
         }
         Q = dequeue (Q);
     }
+}
+
+void OrdinamentoTopologicoDFS (struct Grafo * G)
+{
+    Init_DFS (G);
+    struct Stack * S = NULL;
+    for (int i = 0; i < G->V_Sz; i++) //per ogni vertice del grafo
+    {
+        if (Color[i] == white)
+        {
+            S = OrdinamentoTopologicoDFS_Visit (G, G->v[i], S);
+        }
+    }
+    PrintStack (S);
+}
+
+struct Stack * OrdinamentoTopologicoDFS_Visit (struct Grafo * G, struct Vertice * W, struct Stack * S)
+{
+    Color [W->key] = gray;
+    T_Scoperta [W->key] = tempo++;
+    for (struct Vertice * U = W->next; U != NULL; U = U->next) //per ogni vertice adiacente a W
+    {
+        if (Color [U->key] == white)
+        {
+            S = OrdinamentoTopologicoDFS_Visit (G, U, S);
+        }
+    }
+    Color [W->key] = black;
+    S = push (S, W);
+    T_Fine [W->key] = tempo++;
+}
+
+struct Grafo * Trasposto (struct Grafo * G)
+{
+    //copia dei vertici in un nuovo array per il grafo trasposto
+    struct Vertice ** v_trasposto = malloc (G->V_Sz * sizeof(struct Vertice *)); 
+    for (int i = 0; i < G->V_Sz; i++) //per ogni vertice nel grafo
+    {
+        v_trasposto [i] = G->v[i];
+    }
+    //Inversione degli archi
+    for (int i = 0; i < G->V_Sz; i++) //per ogni vertice nel grafo
+    {
+        for (struct Vertice * U = G->v[i]->next; U != NULL; U = U->next) //per ogni U raggiunto da i
+        {
+            v_trasposto [U->key]->next = G->v[i]; //U raggiungerá i
+        }
+    }
+    
+    struct Grafo * G_trasposto;
+    G_trasposto->v = v_trasposto;
+    G_trasposto->V_Sz = G->V_Sz;
+
+    return G_trasposto;
+}
+
+struct Stack ** DFS_trasposto (struct Grafo * G_trasposto, struct Stack ** Foresta_DF)
+{
+    struct Stack ** CFC_Graph = malloc (G_trasposto->V_Sz * sizeof (struct Stack *));
+    Init_DFS (G_trasposto);
+    for (int i = 0; i < G_trasposto->V_Sz; i++)
+    {
+        while (Foresta_DF [i] != NULL) //Le sorgenti sono selezionate nell'ordine in cui appaiono nella foresta depth-first
+        {
+            struct Vertice * S = top (Foresta_DF);
+            if (Color [S->key] == white)
+            {
+                //Nell'albero DF vengono salvati i vertici raggiunti dalla sorgente nel trasposto (quindi quelli che raggiungono la sorgente nel grafo di partenza)
+                //Ma poiché sono selezionati nella foresta depth-first, stiamo automaticamente scartando quelli che non raggiungono la sorgente nel trasposto.
+                //Quindi tutti i nodi di quest'albero saranno mutualmente raggiungibili, formando una componente fortemente connessa. 
+                CFC_Graph [i] = DFS_trasposto_visit (G_trasposto, S); 
+            }
+            Foresta_DF = pop (Foresta_DF);
+        }
+    }
+    return CFC_Graph;
+}
+
+struct Stack * DFS_trasposto_visit (struct Grafo * G_trasposto, struct Vertice * S)
+{
+    struct Stack * CFC = NULL;
+    Color [S->key] = gray;
+    for (struct Vertice * U = S->next; U != NULL; U = U->next) //per ogni vertice adiacente a S
+    {
+        if (Color [U->key] == white)
+        {
+            Pred [U->key] = S;
+            CFC = DFS_trasposto_visit (G_trasposto, U);
+        }
+    }
+    CFC = push (CFC, S);
+    return CFC;
+}
+
+struct Stack ** ComponenteFortementeConnessa (struct Grafo * G)
+{
+    struct Stack ** Foresta_DF = DFS (G); //DFS mi restituisce la foresta depth first
+    struct Grafo * G_trasposto = Trasposto (G);
+    struct Stack ** CFC_Graph = DFS_trasposto (G_trasposto, Foresta_DF); //DFS sul grafo trasposto restituisce le componenti connesse
+    return CFC_Graph;
 }
