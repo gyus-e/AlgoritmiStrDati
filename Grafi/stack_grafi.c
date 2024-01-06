@@ -27,3 +27,12 @@ struct Stack * pop (struct Stack * S)
     }
     return S;
 }
+
+void PrintStack (struct Stack * S)
+{
+    while (S != NULL)
+    {
+        printf("%d ", S->head);
+    }
+    printf("\n");
+}

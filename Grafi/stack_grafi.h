@@ -11,5 +11,6 @@ struct Stack {
 struct Vertice * top (const struct Stack * const S) {return S->head;}
 struct Stack * push (struct Stack * S, struct Vertice * V);
 struct Stack * pop (struct Stack * S);
+void PrintStack (struct Stack * S);
 
 #endif
