@@ -23,7 +23,7 @@ struct Vertice {
 };
 
 struct Grafo {
-    struct Vertice ** v; //Array contenente tutti i vertici.
+    struct Vertice ** V; //Array contenente tutti i vertici.
     int V_Sz; //numero di vertici.
 };
 

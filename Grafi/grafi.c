@@ -11,7 +11,7 @@ void Init_BFS (struct Grafo * G)
 
     for (int i = 0; i < G->V_Sz; i++) //per ogni vertice del grafo
     {
-        G->v[i]->key = i;
+        G->V[i]->key = i;
     
         Color [i] = white;
         Distance [i] = infinity;
@@ -66,7 +66,7 @@ void Init_DFS (struct Grafo * G)
     
     for (int i = 0; i < G->V_Sz; i++) //per ogni vertice del grafo
     {
-        G->v[i]->key = i;
+        G->V[i]->key = i;
 
         Color[i] = white;
         Pred[i] = NULL;
@@ -84,7 +84,7 @@ struct Stack ** DFS (struct Grafo * G)
     {
         if (Color[i] == white) //se non è stato visitato
         {
-            DFS_Forest [i] = DFS_Visit (G, G->v[i]); //DFS_Visit sul vertice
+            DFS_Forest [i] = DFS_Visit (G, G->V[i]); //DFS_Visit sul vertice
         }
     }
 
@@ -161,7 +161,7 @@ bool Aciclico (struct Grafo * G)
     {
         if (Color[i] == white)
         {
-            if (Aciclico_Visit (G, G->v[i]) == false)
+            if (Aciclico_Visit (G, G->V[i]) == false)
             {
                 return false;
             }
@@ -205,7 +205,7 @@ int * GradoEntrante (struct Grafo * G)
     //calcolo grado entrante
     for (int j = 0; j < G->V_Sz; j++) //per ogni vertice del grafo
     {
-        struct Vertice * J = G->v[j];
+        struct Vertice * J = G->V[j];
         for (struct Vertice * U = J->next; U != NULL; U = U->next) //per ogni vertice adiacente a J
         {
             GE[U->key]++; //ogni volta che trovo U, incremento il suo grado entrante di 1
@@ -225,7 +225,7 @@ void OrdinamentoTopologico (struct Grafo * G)
     {
         if (GE[i] == 0)
         {
-            Q = enqueue (Q, G->v[i]); //accoda i vertici con grado entrante 0
+            Q = enqueue (Q, G->V[i]); //accoda i vertici con grado entrante 0
         }
     }
 
@@ -253,7 +253,7 @@ void OrdinamentoTopologicoDFS (struct Grafo * G)
     {
         if (Color[i] == white)
         {
-            S = OrdinamentoTopologicoDFS_Visit (G, G->v[i], S);
+            S = OrdinamentoTopologicoDFS_Visit (G, G->V[i], S);
         }
     }
     PrintStack (S);
@@ -281,19 +281,19 @@ struct Grafo * Trasposto (struct Grafo * G)
     struct Vertice ** v_trasposto = malloc (G->V_Sz * sizeof(struct Vertice *)); 
     for (int i = 0; i < G->V_Sz; i++) //per ogni vertice nel grafo
     {
-        v_trasposto [i] = G->v[i];
+        v_trasposto [i] = G->V[i];
     }
     //Inversione degli archi
     for (int i = 0; i < G->V_Sz; i++) //per ogni vertice nel grafo
     {
-        for (struct Vertice * U = G->v[i]->next; U != NULL; U = U->next) //per ogni U raggiunto da i
+        for (struct Vertice * U = G->V[i]->next; U != NULL; U = U->next) //per ogni U raggiunto da i
         {
-            v_trasposto [U->key]->next = G->v[i]; //U raggiungerá i
+            v_trasposto [U->key]->next = G->V[i]; //U raggiungerá i
         }
     }
     
     struct Grafo * G_trasposto;
-    G_trasposto->v = v_trasposto;
+    G_trasposto->V = v_trasposto;
     G_trasposto->V_Sz = G->V_Sz;
 
     return G_trasposto;

@@ -363,42 +363,20 @@ struct Tree * BilanciaDeleteSx (struct Tree * T)
         switch (ViolazioneDeleteSx (T->left, T->right))
         {
             case 1: //T->right è rosso (quindi suo padre T e i suoi figli sono per forza neri)
-            //La rotazione a destra sposta il doppio nero piú in basso lungo il sottoalbero sinistro.
-            T=RotazioneDx (T); 
-            T->left->color = red; //il nuovo T->left è il vecchio T, nero. Possiamo colorarlo di rosso perché i suoi figli sono il nodo doppio nero e uno dei figli del vecchio T->right.
-            T->color = black; //il nuovo T è il vecchio T->right, rosso. Dobbiamo colorarlo di nero.
-            //Devo richiamare l'algoritmo sul nuovo T->left.
-            T->left = BilanciaDeleteSx (T->left);
+            T = Caso1Sx (T);
             break;
             
             //T->right è nero e...
             case 2: //ha entrambi i figli neri
-            //Spostiamo il nero da T->left a T. Se T diventa doppio nero, l'algoritmo verrá richiamato piú avanti.
-            PropagateBlack (T);
-            T->left->color = black;
-            //Coloriamo T->right di rosso (perché ha due figli neri), in modo da mantenere l'altezza nera dei nodi del sottoalbero destro.
-            T->right->color = red; 
+            T = Caso2Sx (T);
             break;
 
             case 3: //il suo figlio destro è nero, il suo figlio sinistro è rosso
-            //Rotazione e cambio colori per ricondurre al caso 4
-            T->right = RotazioneSx (T->right);
-            T->right->color = black;
-            T->right->right->color = red;
-            //siamo nel caso 4
-            T = RotazioneSx (T);
-            T->right->color = black;
-            T->color = T->left->color;
-            T->left->color = black;
-            T->left->left->color = black;
+            T = Caso3Sx (T);
             break;
 
             case 4: //il suo figlio destro è rosso
-            T = RotazioneSx (T); 
-            T->right->color = black; //Cioé T->color. La rotazione ha tolto un nero dal sottoalbero destro
-            T->color = T->left->color; //T, che è nero, prende il colore di T->left, la vecchia radice
-            T->left->color = black; //Lo scopo della rotazione era aggiungere un nero al sottoalbero sinistro. Se T->left era rosso, lo coloro di nero.
-            T->left->left->color = black; //il nodo doppio nero a questo punto puó tornare nero.
+            T = Caso4Sx (T);
             break;
         }
     }
@@ -445,43 +423,105 @@ struct Tree * BilanciaDeleteDx (struct Tree * T)
         switch (ViolazioneDeleteDx (T->left, T->right))
         {
             case 1: //T->left è rosso
-            //La rotazione a sinistra sposta il doppio nero piú in basso lungo il sottoalbero destro.
-            T=RotazioneSx (T); 
-            T->right->color = red;
-            T->color = black;
-            T->right = BilanciaDeleteDx (T->right);
+            T = Caso1Dx (T);
             break;
             
             //T->left è nero e...
             case 2: //ha entrambi i figli neri
-            //Spostiamo il nero da T->right a T.
-            PropagateBlack (T);
-            T->right->color = black;
-            //Coloriamo T->left di rosso (perché ha entrambi i figli neri)
-            T->left->color = red; 
+            T = Caso2Dx (T);
             break;
             
             case 3: //il suo figlio sinistro è nero, il suo figlio destro è rosso
-            //Rotazione e cambio colori per ricondurre al caso 4
-            T->left = RotazioneDx (T->left);
-            T->left->color = black;
-            T->left->left->color = red;
-            //siamo nel caso 4
-            T = RotazioneSx (T);
-            T->right->color = black;
-            T->color = T->left->color;
-            T->left->color = black;
-            T->left->left->color = black;
+            T = Caso3Dx (T);
             break;
 
             case 4: //il suo figlio sinistro è rosso
-            T = RotazioneSx (T); //ora T è nero, T->left è rosso, T->right->right è il doppio nero
-            T->left->color = black; //Cioé T->color: la rotazione ha tolto un nero dal sottoalbero sinistro
-            T->color = T->left->color; //T, che è nero, prende il colore di T->left, la vecchia radice
-            T->right->color = black; //Lo scopo della rotazione era aggiungere un nero al sottoalbero destro. Se T->right era rosso, lo coloro di nero.
-            T->right->right->color = black; //il nodo doppio nero a questo punto puó tornare nero.
+            T = Caso4Dx (T);
             break;
         }
     }
+    return T;
+}
+
+struct Tree * Caso1Sx (struct Tree * T)
+{
+    //La rotazione a destra sposta il doppio nero piú in basso lungo il sottoalbero sinistro.
+    T=RotazioneDx (T); 
+    T->left->color = red; //il nuovo T->left è il vecchio T, nero. Possiamo colorarlo di rosso perché i suoi figli sono il nodo doppio nero e uno dei figli del vecchio T->right.
+    T->color = black; //il nuovo T è il vecchio T->right, rosso. Dobbiamo colorarlo di nero.
+    //Devo richiamare l'algoritmo sul nuovo T->left.
+    T->left = BilanciaDeleteSx (T->left);
+    return T;
+}
+
+struct Tree * Caso1Dx (struct Tree * T) //T->left è rosso
+{
+    //La rotazione a sinistra sposta il doppio nero piú in basso lungo il sottoalbero destro.
+    T=RotazioneSx (T); 
+    T->right->color = red;
+    T->color = black;
+    T->right = BilanciaDeleteDx (T->right);
+    return T;
+}
+
+struct Tree * Caso2Sx (struct Tree * T)
+{
+    //Spostiamo il nero da T->left a T. Se T diventa doppio nero, l'algoritmo verrá richiamato piú avanti.
+    PropagateBlack (T);
+    T->left->color = black;
+    //Coloriamo T->right di rosso (perché ha entrambi i figli neri), in modo da mantenere l'altezza nera dei nodi del sottoalbero destro.
+    T->right->color = red; 
+    return T;
+}
+
+struct Tree * Caso2Dx (struct Tree * T) //T->left è nero e ha entrambi i figli neri
+{
+    //Spostiamo il nero da T->right a T.
+    PropagateBlack (T);
+    T->right->color = black;
+    //Coloriamo T->left di rosso (perché ha entrambi i figli neri)
+    T->left->color = red; 
+    return T;
+}
+ 
+struct Tree * Caso3Sx (struct Tree * T) ////T->left è nero e il suo figlio sinistro è nero, il suo figlio destro è rosso
+{
+    //Rotazione e cambio colori per ricondurre al caso 4
+    T->right = RotazioneSx (T->right);
+    T->right->color = black;
+    T->right->right->color = red;
+    //siamo nel caso 4
+    T = Caso4Sx (T);
+    return T;
+}
+
+struct Tree * Caso3Dx (struct Tree * T) ////T->left è nero e il suo figlio sinistro è nero, il suo figlio destro è rosso
+{
+    //Rotazione e cambio colori per ricondurre al caso 4
+    T->left = RotazioneDx (T->left);
+    T->left->color = black;
+    T->left->left->color = red;
+    //siamo nel caso 4
+    T = Caso4Dx (T);
+    return T;
+}
+
+struct Tree * Caso4Sx (struct Tree * T)  ////T->left è nero e il suo figlio sinistro è rosso
+{
+    T = RotazioneSx (T); //Ora T è nero, T->right è rosso, T->left->left è il doppio nero.
+    T->right->color = black; //La rotazione ha tolto un nero dal sottoalbero destro, quindi va riaggiunto.
+    T->color = T->left->color; //T, che è nero, prende il colore di T->left, la vecchia radice.
+    T->left->color = black; //Lo scopo della rotazione era aggiungere un nero al sottoalbero sinistro. Se T->left era rosso, lo coloro di nero.
+    T->left->left->color = black; //il nodo doppio nero a questo punto puó tornare nero.
+    return T;
+}
+
+struct Tree * Caso4Dx (struct Tree * T)  ////T->left è nero e il suo figlio sinistro è rosso
+{
+    T = RotazioneDx (T); //ora T è nero, T->left è rosso, T->right->right è il doppio nero
+    T->left->color = black; 
+    T->color = T->left->color;
+    T->right->color = black;
+    T->right->right->color = black;
     return T;
 }
