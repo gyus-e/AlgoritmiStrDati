@@ -30,3 +30,39 @@ struct Queue * dequeue (struct Queue * Q)
     }
     return Q;
 }
+
+struct Queue * fill (struct Grafo * G)
+{
+    struct Queue * Q;
+    for (int i = 0; i < G->V_Sz; i++)
+    {
+        Q = enqueue (Q, G->V[i]);
+    }
+    return Q;
+}
+
+struct Queue * delete (struct Queue * Q, struct Vertice * V)
+{
+    struct Queue * Pred = NULL, * Curr = Q;
+    while (Curr != NULL)
+    {
+        if (Curr->head == V)
+        {
+            if (Pred != NULL)
+            {
+                Pred->next = Curr->next;
+            }
+            else 
+            {
+                Q = Curr->next;
+            }
+            free (Curr);
+        }
+        else 
+        {
+            Pred = Curr;
+            Curr = Curr->next;
+        }
+    }
+    return Q;
+}
