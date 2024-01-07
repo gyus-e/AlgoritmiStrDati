@@ -3,7 +3,7 @@
 
 typedef int TIPO;
 
-#define infinity -1
+#define infinity 999999999
 
 //I vertici non visitati sono bianchi. I vertici in coda sono grigi. I vertici visitati sono neri.
 #define black 'b'
@@ -28,7 +28,7 @@ struct Grafo {
 };
 
 char * Color; //Array che associa a ogni vertice un colore
-int * Distance; //Array che associa a ogni vertice la sua distanza dalla sorgente
+int * Distance; //Array che associa a ogni vertice la sua distanza dalla sorgente. Nei grafi pesati, la distanza è il peso del percorso minimo.
 struct Vertice ** Pred; //Array che associa a ogni vertice il suo predecessore
 
 unsigned int tempo = 0;

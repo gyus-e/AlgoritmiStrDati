@@ -273,6 +273,7 @@ struct Stack * OrdinamentoTopologicoDFS_Visit (struct Grafo * G, struct Vertice 
     Color [W->key] = black;
     S = push (S, W);
     T_Fine [W->key] = tempo++;
+    return S;
 }
 
 struct Grafo * Trasposto (struct Grafo * G)
