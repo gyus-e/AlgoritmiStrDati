@@ -89,7 +89,7 @@ DFS_Visit_2 (G2, s, v, cond2)
                 cond2 = false;
             }
         }
-        color [s] = black;
     }
+    color [s] = black;
     return cond2;
 }
