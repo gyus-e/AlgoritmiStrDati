@@ -1,0 +1,58 @@
+Potenza (b, exp)
+{
+    if (exp == 0)  
+    {
+        ret = 1;
+    }
+    else if (b == 0)
+    {
+        ret = 0;
+    }
+    else 
+    {
+        ret = b * Potenza (b, exp-1);
+    }
+    return ret;
+}
+
+//la linea ret = b * Potenza (b, exp-1) si puó tradurre come:
+//exp = exp - 1;
+//ret = Potenza (b, exp);
+//ret = b * ret;
+
+Potenza_iterativo (b, exp)
+{
+    stack_exp = NULL;
+    start = true;
+    c_exp = exp;
+
+    while (start || stack_exp != NULL)
+    {
+        if (start)
+        {
+            if (c_exp == 0)
+            {
+                ret = 1;
+                start = false;
+            }
+            else if (b == 0)
+            {
+                ret = 0;
+                start = false;
+            }
+            else 
+            {
+                push (stack_exp, c_exp);
+                c_exp = c_exp - 1;
+                start = true; 
+            }
+        }
+        else 
+        {
+            c_exp = top (stack_exp);
+            ret = b * ret;
+            pop (stack_exp);
+        }
+    }
+    return ret;
+}

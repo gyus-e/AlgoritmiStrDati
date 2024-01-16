@@ -1,0 +1,76 @@
+MergeSort (v, left, right)
+{
+    if (left == right)
+    {
+        ret = v;
+    }
+    else 
+    {
+        mid = (left + right) / 2;
+        MergeSort (v, left, mid);
+        MergeSort (v, mid+1, right);
+        Merge (v, left, mid, right);
+    }
+    return;
+}
+
+MergeSort_Iterativo (v, left, right)
+{
+    start = true;
+    cleft = left;
+    cright = right;
+    
+    stck_left = NULL;
+    stck_mid = NULL;
+    stck_right = NULL;
+
+    while (start || stck_right != NULL)
+    {
+        if (start)
+        {
+            if (cleft == cright)
+            {
+                last = cright;
+                start = false; //caso base
+            }
+            else
+            {
+                mid = (cleft + cright) / 2;
+    
+                push (stck_left, cleft);
+                push (stck_right, cright);
+                push (stck_mid, mid);
+
+                cright = mid;
+                start = true;
+            }
+        }
+        else 
+        {
+            //recupero lo stato
+            cleft = top (stck_left);
+            cright = top (stck_right);
+            cmid = top (stck_mid);
+
+            //distinguo se vengo dalla chiamata a o b 
+            if (last != cright) //vengo dalla a
+            {
+                cleft = mid + 1;
+                start = true;
+            }
+            else 
+            {
+                Merge (v, cleft, mid, cright);
+
+                //termino la chiamata
+                pop (stck_left);
+                pop (stck_right);
+                pop (stck_mid);
+                last = cr;
+                start = false;
+            }
+            
+            
+        }
+    }
+}

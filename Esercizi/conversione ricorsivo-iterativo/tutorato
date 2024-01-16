@@ -1,0 +1,199 @@
+Algoritmo (A, i, j, x)
+{
+    if (j - i >= 1)
+    {
+        y = Rand()%2;
+        if (x == 1)
+        {
+            ret = Algoritmo (A, (i+j)/2 + 1, j, y);
+            if (ret % 2 == 0)
+            {
+                ret = Algoritmo (A, i, (i+j)/2, 1-y);
+            }
+        }
+        else 
+        {
+            ret = Algoritmo (A, i, (i+j)/2, y)
+            {
+                ret = ret + Algoritmo (A, (i+j)/2 + 1, j, 1-y);
+            }
+        }
+    }
+    else 
+    {
+        ret = A[i];
+    }
+    return ret;
+}
+
+//A non viene modificato, non necessita stack
+//i e j hanno bisogno di stack 
+//devo usare o uno stack per x o uno per y (da una ricavo l'altra)
+//La x non avrebbe bisogno di stack, ma la y puó essere ricavata usando la x, recuperata da uno stack
+//ma senza salvare la x, non posso sapere da che chiamata sto risalendo  tra le ultime due
+//ret va salvato per l'ultima chiamata ricorsiva, ret = ret + Algoritmo (quindi è sia in lettura che in scrittura)
+
+Algoritmo_Iterativo (A, i, j, x)
+{
+    start = true;
+    st_i = NULL;
+    st_j = NULL;
+    st_x = NULL;
+
+    st_ret = NULL;
+
+    ci = i;
+    cj = j;
+    cx = x;
+
+    while (start || st_i != NULL)
+    {
+        if (start)
+        {
+            if (cj - ci >= 1)
+            {
+                y = Ran()%2;
+                if (cx == 1)
+                {
+                    //prima chiamata 
+                    push (ci, st_i);
+                    push (cj, st_j);
+                    push (cx, st_x);
+                    ci = (ci+cj)/2 + 1;
+                    //cj = cj;
+                    cx = y;
+                    //start = true;
+                }
+                else 
+                {
+                    //prima chiamata
+                    push (ci, st_i);
+                    push (cj, st_j);
+                    push (cx, st_x);
+                    //ci = ci;
+                    cj = (i+j)/2;
+                    cx = y;
+                    //start = true;
+                }
+            }
+            else //caso base
+            {
+                ret = A[ci];
+
+                st_ret = push (ret);
+                last_i = ci;
+                //last_j = cj;
+                start = false;
+            }
+        }
+        else //risalgo
+        {
+            
+            ci = top (st_i);
+            cj = top (st_j);
+            //poiché uso cx per recuperare il valore di y
+            //e poiché l'operazione da effettuare per ottenere y varia a seconda del caso 
+            //dovró recuperare prima y e poi cx dallo stack in ogni caso
+            ret = top (st_ret);
+
+            //da dove sto risalendo?
+            if (cx == 1) //dalle chiamate nell'if
+            {
+                if (last_i != ci) //torno dalla prima chiamata
+                {
+                    if (ret % 2 == 0)
+                    {
+                        y = cx;
+                        cx = top (st_x);
+
+                        //nuova chiamata ricorsiva 
+
+                        //il contesto della chiamata attuale è giá sullo stack
+
+                        //ci = ci;
+                        cj = (ci + cj)/2;
+                        cx = 1 - y;
+                        start = true;
+                    }
+                    else 
+                    {
+                        //risalgo
+                        last_i = ci;
+                        last_j = cj;
+                        pop (st_i);
+                        pop (st_j);
+                        pop (st_x);
+                        //start = false;
+                    }
+                }
+                else //torno dall seconda chiamata
+                {
+                    //risalgo 
+                    
+                    //superflue: i loro valori sono giá quelli di last
+                    //last_i = ci;
+                    //last_j = cj;
+            
+                    //ho passato cx = 1 - y
+                    y = 1 - cx; 
+                    //tuttavia non ho bisogno di usare y. Potrei omettere questo passaggio                  
+    
+                    cx = top (st_x);
+
+                    pop (st_i);
+                    pop (st_j);
+                    pop (st_x);
+                    //start = false;
+                }
+            }
+            else //dalle chiamate nell'else 
+            {
+                if (last_i == ci) //torno dalla prima chiamata
+                {
+                    if (ret % 2 == 1)
+                    {
+                        //nuova chiamata ricorsiva 
+                        //ho passato cx = 1 - y
+                        y = 1 - cx; 
+                        cx = top (st_x);                        
+                        
+                        push (ret, st_ret) 
+
+                        ci = (ci+cj)/2 + 1;
+                        //cj = cj;
+                        cx = 1-y;
+                        start = true;
+                    }
+                    else 
+                    {
+                        //risalgo
+
+                        last_i = ci;
+                        last_j = cj;
+
+                        pop (st_i);
+                        pop (st_j);
+                        pop (st_x);
+                        //start = false;
+                    }
+                }
+                else //torno dalla seconda chiamata
+                {
+                    //risalgo
+
+                    old_ret = top (st_ret);
+                    ret += old_ret;
+                    
+                    last_i = ci;
+
+                    pop (st_i);
+                    pop (st_j);
+                    pop (st_x);
+                    pop (st_ret);
+                    //start = false;
+                }
+            }
+        }
+    }
+    return ret;
+}

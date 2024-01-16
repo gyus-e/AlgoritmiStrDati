@@ -1,0 +1,137 @@
+Alg (T, k)
+{
+    ret = NIL;
+    if (T != NIL) 
+    {    
+        if (T->key > k) 
+        {
+            b = T;
+            ret = BEST (Alg(T->sx, k), b, k);
+        }
+        else if (T->key < k) 
+        {    
+            a = T ;
+            ret = BEST (a, , Alg (T->dx, k), k);
+        }
+        else 
+        {
+            a = Alg (T->sx, k);
+            b = Alg (T->dx, k);
+            ret = BEST (a,b,k);
+        }    
+    }    
+    return ret;
+}
+
+//bisogna salvare una variabile nello stack se questa viene riutilizzato tra due chiamate ricorsive
+//k non viene mai sovrascritto
+//b...?
+//stack per: T, a
+
+//caso base: T = NIL
+
+//bisogna riconoscere da quale chiamata si sta tornando
+//si fa confrontando T->key e k al ritorno dalla chiamata
+//per l'ultimo caso, si controlla se il figlio su cui è stata chiamata era T->dx o T->sx 
+
+
+Alg_Iterativo (T, k)
+{
+    cT = T; //valore di T nella chiamata ricorsiva corrente
+    st_T = NULL;
+    st_a = NULL;
+    start = true; //true quando inizia una chiamata, false quando stiamo tornando
+
+    while (start || st_T != NULL) //usiamo uno stack per contare le chiamate ricorsive effettuate (si svuota quando siamo risaliti dall'ultima)
+    {
+        if (start)
+        {
+            ret = NULL;
+            if (cT != NULL)
+            {
+                if (cT->key > k)
+                {               
+                    b = cT;
+                    //salvo il contesto
+                    st_T.push (cT);
+                    //costruisco il contesto della chiamata successiva
+                    cT = cT->sx;
+                    //inizia un'altra chiamata
+                    start = true;
+                }
+                else if (cT->key < k)
+                {
+                    a = cT;
+                    //salvo il contesto 
+                    st_T.push (cT);
+                    //costruisco il contesto della chiamata successiva 
+                    cT = cT->dx;
+                    //inizia un'altra chiamata
+                    start = true;
+                }
+                else 
+                {
+                    st_T.push (cT);
+                    cT = cT-sx;
+                    //prima delle due chiamate ricorsive
+
+                    start = true;
+                }
+            }
+            else //caso base: cT == NULL
+            {
+                start = false; //ora possiamo risalire
+                last = cT; //siamo tornati indietro da questa chiamata
+            }
+        }
+        else //start = false, sto tornando da una chiamata ricorsiva
+        {
+            //ripristino il contesto
+            cT = top(st_T);
+
+            //identifico da dove sto risalendo
+            if (cT->key > k)
+            {
+                //il valore di Alg(T->sx, k) è salvato in ret
+                ret = BEST (ret, b);
+                //rimuovo il contesto della chiamata appena terminata
+                st_T.pop ();
+                last = cT;
+                start = false;
+            }
+            else if (cT->key < k)
+            {
+                ret = BEST (a, ret);
+                st_T.pop ()
+                last = cT;
+                start = false;
+            }
+            else //torno dal caso con due chiamate 
+            {
+                //identifico da dove sto risalendo
+                if (last != cT->dx) //sto risalendo dalla prima chiamata (conviene controllare la diversitá piuttosto che last == T->sx)
+                {
+                    a = ret;
+
+                    //c'è una seconda chiamata ricorsiva da fare
+                    st_a.push (a);
+                    st_T.push (cT);
+                    cT = cT -> dx;
+                    start = true; //scendiamo di nuovo lungo cT->dx
+                }
+                else //last == cT->dx, ultima chiamata ricorsiva
+                {
+                    a = st_a.top ();
+                    b = ret;
+                    ret = BEST (a, b, k);
+
+                    //termino la chiamata
+                    st_a.pop ();
+                    st_T.pop ();
+                    last = cT;
+                }
+            }
+        }
+    }
+    return ret;
+}

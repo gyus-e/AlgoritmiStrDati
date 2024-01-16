@@ -1,0 +1,101 @@
+Algoritmo (T, h)
+{
+    if (T == NULL)
+    {
+        return Z (0, h);
+    }
+    else 
+    {
+        a = 0;
+        if (T->key % 2 == 0)
+        {
+            a = a + Algoritmo (T->dx, 2*h);
+        }
+        if (T->key % 3 == 1)
+        {
+            a = a - Algoritmo (T->sx, 3*h);
+        }
+        return Z (T->key, a);
+    }
+}
+
+Algoritmo_Iterativo (T, h)
+{
+    Tstack = NULL;
+    Astack = NULL;
+    cT = T;
+    ch = h;
+
+    start = true;
+
+    while (start || Tstack != NULL)
+    {
+        if (start)
+        {
+            if (T == NULL) //caso base
+            {
+                ret = Z (0, ch);
+                start = false;
+            }
+            else 
+            {
+                a = 0;
+                if (cT->key % 2 == 0)
+                {
+                    push (a, Astack);
+                    push (cT, Tstack);
+                    cT = cT->dx;
+                    ch = 2*ch;
+                }
+                else if (cT -> key % 3 == 1)
+                {
+                    push (a, Astack);
+                    push (cT, Tstack);
+                    cT = cT->sx;
+                    ch = 3*ch;
+                }
+                else 
+                {
+                    //altro caso base
+                    ret = Z (T->key, a);
+                    start = false;
+                }
+            }
+        }
+        else 
+        {
+            predT = top (Tstack);
+            a = top (Astack);
+            if (cT != predT->sx) //torno dalla prima chiamata
+            {
+                ch = ch/2;            
+                a = a + ret;
+                if (cT -> key % 3 == 1) //devo effettuare la seconda chiamata
+                {
+                    push (a, Astack);
+                    push (cT, Tstack);
+                    cT = cT->sx;
+                    ch = 3*ch;
+                    start = true;
+                }
+                else 
+                {
+                    //risalgo
+                    pop (Tstack);
+                    pop (Astack);
+                    ret = Z (cT->key, a);
+                }
+            }
+            else //torno dalla seconda chiamata
+            {
+                //risalgo
+                ch = ch/3;
+                a = a - ret;
+                pop (Tstack);
+                pop (Astack);
+                ret = Z (cT->key, a);
+            }
+        }
+    }
+    return ret;
+}

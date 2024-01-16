@@ -1,0 +1,58 @@
+//Dato un grafo in input
+//Restituire il massimo sottografo aciclico
+
+Init (G)
+{
+    for each v in V 
+    {
+        Color [v] = white;
+    }
+}
+
+//Grafo: G = (V, E) dove E sottoinsieme di VxV
+//Sottografo: G' = (V', E') dove V' è contenuto in V, E' è contenuto in ((V'xV') intersecato E)
+//Massimo sottografo aciclico: G' = (V', E'), dove V' = V ed E' = E - {archi all'indietro}
+
+//E è rappresentato da G.Adj, E' da G'.Adj
+
+//DFS per trovare archi all'indietro e rimuoverli
+
+
+MaxSottografoAciclico (G)
+{
+    Grafo G' = (V, Adj);
+    G'.V = NULL; //L'insieme dei vertici del sottografo
+    G'.Adj = NULL //L'insieme degli archi del sottografo
+
+    Init (G);
+    for each s in G.V  
+    {
+        G'.V = G'.V U {s}; //Copio in V' tutti i vertici
+
+        if (Color [s] == white) //DFS per scoprire quali archi inserire
+        {
+            Color [s] = gray;
+            DFS_Visit (G, G', s);
+            Color [s] = black;
+        }
+    }
+    return G';
+}
+
+DFS_Visit (G, G', s)
+{
+    for each v in G.Adj [s]
+    {
+        if (Color [v] != gray) //se (s, v) non è un arco all'indietro
+        {
+            G'.Adj [s] = G'.Adj [s] U {s, v}; //aggiungo l'arco nel sottografo
+            if (Color [v] == white) //continuo normalmente con la DFS_Visit
+            {
+                Color [v] = gray;
+                DFS_Visit (G, G', v);
+                Color [v] = black;
+            }
+        }
+    }
+    return;
+}

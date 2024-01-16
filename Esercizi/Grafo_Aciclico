@@ -1,0 +1,51 @@
+//Sia G un grafo dato in ingresso
+//Scrivere un algoritmo che verifichi la presenza di cicli in G
+
+//per determinare se un grafo è aciclico, basta effettuare una DFS e vedere se ci sono archi all'indietro
+
+Init (G)
+{
+    for each v in V  
+    {
+        Color [v] = white;
+    }
+}
+
+Ciclico (G)
+{
+    Init (G)
+    ret = false
+    for each v in V 
+    {
+        if (Color [v] == white)
+        {
+            Color [v] = gray;
+            ret = Ciclico_Visit (v, G);
+            Color [v] = black;
+            if (ret == true)
+            {
+                return true;
+            }
+        }
+    }
+    return ret;
+}
+
+Ciclico_Visit (s, G)
+{
+    ret = false;
+    for each v in Adj[s]
+    {
+        if (Color [v] == white)
+        {
+            Color [v] = gray;
+            ret = Ciclico_Visit (v, G); 
+            Color [v] = black;
+        }
+        else if (Color [v] == gray)
+        {
+            return true;
+        }       
+    }
+    return ret;
+}

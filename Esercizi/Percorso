@@ -1,0 +1,95 @@
+//Siano dati due grafi orientati G1 = (V, E1); G2 = (V, E2)
+//s, v appartenenti a V 
+
+//si scriva un algoritmo che verifichi in tempo lineare sui due grafi in ingresso 
+//se sono soddisfatte entrambe le seguenti condizioni:
+//1. Ogni percorso finito massimale in G1 che parte da s non passa per v;
+//2. Tutti i percorsi infiniti in G2 che partono da s passano per v.
+
+//1. DFS per cercare un percorso finito massimale che contiene v. Una volta trovato restituisce false.
+//2. DFS per cercare un ciclo che parte da s e non contiene v. Una volta trovato restituisce false
+
+Init (V)
+{
+    for each v in V 
+    {
+        color [v] = white;
+    }
+}
+
+DFS (G1, G2, s, v)
+{
+    
+    Init (V);
+    cond1 = DFS_Visit_1 (G1, s, v, false, false);
+    Init (V);
+    color [v] = black; //ignoro v nella visita 2
+    cond2 = DFS_Visit_2 (G2, s, v, true);
+    return cond1 && cond2;    
+
+    
+}
+
+DFS_Visit_1 (G1, s, v, found, ciclo)
+{
+    //1. Ogni percorso finito massimale in G1 che parte da s non passa per v;
+    //Cioé: Non esiste un percorso finito massimale che parte da s e passa per v
+    
+    //False se
+    //1: passo per v
+    //2: non trovo cicli
+
+    //assumo inizialmente ciclo = false e found = false
+    if (found && !ciclo)
+    {
+        ret = false;
+    }
+    //se ret == false non ho bisogno di continuare con la ricorsione
+    if (ret != false)
+    {
+        if (s == v)
+        {
+            found = true;
+        }
+
+        color [s] = gray;
+        for each u in G1.Adj[s]
+        {
+            if (color [u] == gray)
+            {
+                //trovato ciclo
+                ciclo = true;
+            }
+            else if (color [u] == white)
+            {
+                ret = DFS_Visit_1 (G1, u, v, found, ciclo);
+            }
+            
+
+        }
+        color [s] = black;
+    }
+    return ret;
+}
+
+DFS_Visit_2 (G2, s, v, cond2)
+{
+    //Restituire false se trovo un ciclo che parte da s non contiene v
+    color [s] = gray;
+    if (cond2 != false)
+    {     
+        for each u in G2.Adj [s]
+        {
+            if (color [u] == white)
+            {
+                cond2 = DFS_Visit_2 (G2, u, v, cond2);
+            }
+            else if (color [u] == gray) //ciclo che non contiene v
+            {
+                cond2 = false;
+            }
+        }
+        color [s] = black;
+    }
+    return cond2;
+}

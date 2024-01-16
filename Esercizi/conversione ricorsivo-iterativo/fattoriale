@@ -1,0 +1,45 @@
+fattoriale (n)
+{
+    if (n == 0)
+    {
+        ret = 1;
+    }
+    else 
+    {
+        ret = n * fattoriale (n-1);
+    }
+    return ret;
+}
+
+fattoriale_iterativo (n)
+{
+    start = true;
+    stack = NULL;
+    cn = n;
+
+    while (start || stack != NULL)
+    {
+        if (start)
+        {
+            if (cn == 0)
+            {
+                ret = 1;
+                start = false;
+            }
+            else 
+            {
+                push (cn, stack);
+                cn = cn - 1;
+                start = true;
+            }
+        }
+        else 
+        {
+            cn = top (stack);
+            ret = ret * cn;
+            pop (stack);
+        }
+    }
+
+    return ret;
+}

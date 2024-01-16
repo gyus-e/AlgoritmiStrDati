@@ -1,0 +1,63 @@
+//Dato un grafo G ed un vertice v del grafo 
+//Costruire il sottografo massimale dei vertici di G che raggiungono v 
+
+//Sottografo di G = (V, E) := G' = (V', E')
+//V' contenuto in V 
+//E' contenuto in E intersecato (V' x V')
+
+//Vertici che raggiungono v = vertici raggiunti da v nel grafo trasposto
+
+Trasposto (G)
+{
+    G_tr = (V, E_tr);
+    E_tr = NULL;
+    for each v in V 
+    {
+        for each u in v.Adj
+        {
+            E_tr = E_tr U {u, v};
+        }
+    }
+    return G_tr;
+}
+
+//Trovare vertici raggiunti da v nel grafo trasposto: DFS 
+
+Init (G)
+{
+    for each v in V 
+    {
+        color [v] = white;
+    }
+}
+
+DFS (G, v)
+{
+    G_tr = Trasposto (G);
+    Init (G_tr);
+    G' = DFS_Visit (G_tr, v);
+
+    return G';
+}
+
+DFS_Visit (G, v)
+{
+    color [v] = gray;
+    for each u in v.Adj
+    {
+        //Voglio aggiungere solo gli archi che collegano i vertici raggiungibili da v, quindi non voglio trovare archi di attraversamento.
+        //Poiché la DFS_Visit viene chiamata solo su v, possono esserci archi all'indietro e in avanti, ma nessuno di attraversamento.
+
+        E' = E' U {(u, v)} //anziché inserire (v, u), che è un arco del grafo trasposto, inserisco l'inverso
+
+        if (color [u] == white)
+        {
+            G' = DFS_Visit (G, u);
+        }
+    }
+    color [v] = black;
+
+    V' = V' U {v};
+    G' = (E', V');
+    return G';
+}
