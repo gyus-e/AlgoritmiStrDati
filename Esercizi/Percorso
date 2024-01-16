@@ -6,9 +6,6 @@
 //1. Ogni percorso finito massimale in G1 che parte da s non passa per v;
 //2. Tutti i percorsi infiniti in G2 che partono da s passano per v.
 
-//1. DFS per cercare un percorso finito massimale che contiene v. Una volta trovato restituisce false.
-//2. DFS per cercare un ciclo che parte da s e non contiene v. Una volta trovato restituisce false
-
 Init (V)
 {
     for each v in V 
@@ -18,16 +15,15 @@ Init (V)
 }
 
 DFS (G1, G2, s, v)
-{
-    
+{    
+    //1. DFS per cercare un percorso finito massimale che contiene v. Una volta trovato restituisce false.
+    //2. DFS per cercare un ciclo che parte da s e non contiene v. Una volta trovato restituisce false.
     Init (V);
-    cond1 = DFS_Visit_1 (G1, s, v, false, false);
+    cond1 = DFS_Visit_1 (G1, s, v, false, true);
     Init (V);
     color [v] = black; //ignoro v nella visita 2
     cond2 = DFS_Visit_2 (G2, s, v, true);
     return cond1 && cond2;    
-
-    
 }
 
 DFS_Visit_1 (G1, s, v, found, ciclo)
@@ -39,7 +35,7 @@ DFS_Visit_1 (G1, s, v, found, ciclo)
     //1: passo per v
     //2: non trovo cicli
 
-    //assumo inizialmente ciclo = false e found = false
+    //assumo inizialmente ciclo = true e found = false
     if (found && !ciclo)
     {
         ret = false;
@@ -47,25 +43,26 @@ DFS_Visit_1 (G1, s, v, found, ciclo)
     //se ret == false non ho bisogno di continuare con la ricorsione
     if (ret != false)
     {
+        //controllo se ho trovato v
         if (s == v)
         {
             found = true;
+            //a questo punto, found verrá passato come true per tutte le visite successive
         }
-
+        //comincio la DFS
         color [s] = gray;
         for each u in G1.Adj[s]
         {
-            if (color [u] == gray)
+            if (color [u] == black)
             {
-                //trovato ciclo
-                ciclo = true;
+                //Ho terminato la visita e non ho trovato un ciclo
+                ciclo = false;
             }
             else if (color [u] == white)
             {
                 ret = DFS_Visit_1 (G1, u, v, found, ciclo);
+                //se gli passo ciclo = false e found = true, restituirá automaticamente false
             }
-            
-
         }
         color [s] = black;
     }
