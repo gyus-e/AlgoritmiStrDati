@@ -53,9 +53,11 @@ struct Stack * DFS_Visit (struct Grafo * G, struct Vertice * S);
 //Dato un grafo G, e dati due vertici V e U appartenenti al grafo
 //Al termine di una visita DFS sará possibile UNA SOLA delle seguenti:
 
+//il tempo di visita di un vertice è contenuto nel tempo di visita dell'altro
 //  1) T_Scoperta [V] < T_Scoperta [U] < T_Fine [U] < T_Fine [V]
 //  2) T_Scoperta [U] < T_Scoperta [V] < T_Fine [V] < T_Fine [U]
 
+//i tempi di visita dei due vertici sono disgiunti
 //  3) T_Scoperta [V] < T_Fine [V] < T_Scoperta [U] < T_Fine [U]
 //  4) T_Scoperta [U] < T_Fine [U] < T_Scoperta [V] < T_Fine [V]
 /////////////////////////////////////////////////////////////////////////////////////////////////
