@@ -78,6 +78,7 @@ void Init_DFS (struct Grafo * G)
 struct Stack ** DFS (struct Grafo * G)
 {
     struct Stack ** DFS_Forest = malloc (G->V_Sz * sizeof(struct Stack *));
+    
     Init_DFS (G);
 
     for (int i = 0; i < G->V_Sz; i++) //per ogni vertice del grafo
@@ -91,12 +92,10 @@ struct Stack ** DFS (struct Grafo * G)
     return DFS_Forest;
 }
 
-//Opzionalmente, possiamo salvare il tempo di scoperta e di fine visita di ogni vertice in due array, e l'array dei predecessori. 
 struct Stack * DFS_Visit (struct Grafo * G, struct Vertice * S)
 {
     struct Stack * DFS_Tree = NULL;
     Color [S->key] = gray; //la visita sul vertice è in corso
-    T_Scoperta [S->key] = tempo++; //Salva il momento in cui la visita su S è iniziata. La variabile tempo va incrementata ogni volta che viene utilizzata.
 
     for (struct Vertice * W = S->next; W != NULL; W = W->next) //per ogni vertice adiacente a S
     {
@@ -106,20 +105,18 @@ struct Stack * DFS_Visit (struct Grafo * G, struct Vertice * S)
             DFS_Tree = DFS_Visit (G, W, DFS_Tree); //effettua la visita sul vertice
         }
     }
-    
     DFS_Tree = push (DFS_Tree, S); //Terminata l'esplorazione della sorgente, la inserisce nello Stack
 
-    T_Fine [S->key] = tempo++; //Salva il momento in cui la visita su S è terminata.
     Color [S->key] = black; //la visita sul vertice è terminata
 
     return DFS_Tree; //Lo stack è un albero della Foresta Depth-First: contiene in cima la sorgente, e a seguire i nodi esplorati a partire da essa.
 }
 
-//Esempio di DFS
+//Esempio di DFS. Salviamo il tempo di scoperta e di fine visita di ogni vertice in due array.
 void PartizionaArchi (struct Grafo * G, struct Vertice * S)
 {
     Color [S->key] = gray;
-    T_Scoperta [S->key] = tempo++;
+    T_Scoperta [S->key] = tempo++; //Salva il momento in cui la visita su S è iniziata. La variabile tempo va incrementata ogni volta che viene utilizzata.
 
     for (struct Vertice * W = S->next; W != NULL; W = W->next) //per ogni vertice adiacente a S
     {
@@ -149,7 +146,7 @@ void PartizionaArchi (struct Grafo * G, struct Vertice * S)
         }   
     }
     
-    T_Fine [S->key] = tempo++;
+    T_Fine [S->key] = tempo++; //Salva il momento in cui la visita su S è terminata.
     Color [S->key] = black;
 }
 
@@ -276,6 +273,13 @@ struct Stack * OrdinamentoTopologicoDFS_Visit (struct Grafo * G, struct Vertice 
     return S;
 }
 
+//Per identificare una componente fortemente connessa, basta capire quali vertici in un albero raggiungono la sua radice.
+//Per trovarle tutte, richiamo l'algoritmo sullo stesso albero rimuovendo i vertici di cui ho giá trovato la componente connessa.
+ 
+//Per capire quali vertici in un albero raggiungono la sua radice, effettuo una DFS sul grafo trasposto (ottenuto cambiando il verso degli archi).
+//Ogni vertice raggiunto dalla sorgente nel grafo trasposto, raggiunge la sorgente nel grafo di partenza.
+//Le componenti fortemente connesse del grafo trasposto sono le stesse del grafo di partenza.
+
 struct Grafo * Trasposto (struct Grafo * G)
 {
     //copia dei vertici in un nuovo array per il grafo trasposto
@@ -300,25 +304,25 @@ struct Grafo * Trasposto (struct Grafo * G)
     return G_trasposto;
 }
 
+//Usiamo una DFS sul grafo trasposto che seleziona le sorgenti in modo da restituire esattamente un albero per ogni componente fortemente connessa.
+
 struct Stack ** DFS_trasposto (struct Grafo * G_trasposto, struct Stack ** Foresta_DF)
 {
     struct Stack ** CFC_Graph = malloc (G_trasposto->V_Sz * sizeof (struct Stack *));
     Init_DFS (G_trasposto);
-    for (int i = 0; i < G_trasposto->V_Sz; i++)
+
+    for (int i = 0; Foresta_DF [i] != NULL; i++) //Le sorgenti sono selezionate nell'ordine in cui appaiono nella foresta depth-first
     {
-        while (Foresta_DF [i] != NULL) //Le sorgenti sono selezionate nell'ordine in cui appaiono nella foresta depth-first
+        struct Vertice * S = top (Foresta_DF);
+        if (Color [S->key] == white)
         {
-            struct Vertice * S = top (Foresta_DF);
-            if (Color [S->key] == white)
-            {
-                //Nell'albero DF vengono salvati i vertici raggiunti dalla sorgente nel trasposto (quindi quelli che raggiungono la sorgente nel grafo di partenza)
-                //Ma poiché sono selezionati nella foresta depth-first, stiamo automaticamente scartando quelli che non raggiungono la sorgente nel trasposto.
-                //Quindi tutti i nodi di quest'albero saranno mutualmente raggiungibili, formando una componente fortemente connessa. 
-                CFC_Graph [i] = DFS_trasposto_visit (G_trasposto, S); 
-            }
-            Foresta_DF = pop (Foresta_DF);
+            //Nell'albero DF vengono salvati i vertici raggiunti dalla sorgente nel trasposto (quindi quelli che raggiungono la sorgente nel grafo di partenza)
+            //Ma poiché sono selezionati nella foresta depth-first, stiamo automaticamente scartando quelli che non raggiungono la sorgente nel trasposto.
+            //Quindi tutti i nodi di quest'albero saranno mutualmente raggiungibili, formando una componente fortemente connessa. 
+            CFC_Graph [i] = DFS_trasposto_visit (G_trasposto, S); 
         }
     }
+    
     return CFC_Graph;
 }
 
