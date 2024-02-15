@@ -52,8 +52,8 @@ struct Tree * BilanciaSx (struct Tree * T)
         else //non c'è violazione. È necessario aggiornare l'altezza dei nodi.
         {
             T->h = 1 + sup (height(T->left), height(T->right));
-            return T;
         }
+        return T;
     }
 }
 
@@ -76,8 +76,8 @@ struct Tree * BilanciaDx (struct Tree * T)
         else
         {
             T->h = 1 + sup (height(T->left), height(T->right));
-            return T;
         }
+        return T;
     }
 }
 
