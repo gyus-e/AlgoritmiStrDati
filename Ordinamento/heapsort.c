@@ -15,7 +15,7 @@ void HeapSort(int *A)
     Buildheap(A);
     int heapsize = N;
 
-    for (int i = N; i >= 1; i--)
+    for (int i = N-1; i >= 1; i--)
     {
         //A[0] è sempre il massimo.
         //Portando il massimo in posizione M, lo si pone alla fine.
@@ -31,7 +31,7 @@ void HeapSort(int *A)
 // Si parte dall'ultimo nodo interno (il padre dell'ultima foglia, in posizione n) applicando heapify su ogni nodo a risalire.
 void Buildheap(int * const A)
 {
-    for (int i = Parent(N); i >= 1; i--)
+    for (int i = Parent(N); i >= 0; i--)
     {
         Heapify(A, N, i);
     }
@@ -45,12 +45,12 @@ void Heapify(int * const A, const unsigned int heapsize, const unsigned int i)
     int Dx = Right(i); // posizione del figlio destro del nodo i
     int max = i;
 
-    if (A[max] < A[Sx] && Sx <= heapsize) // i ha un figlio sinistro solo se Sx <= heapsize
+    if (A[max] < A[Sx] && Sx < heapsize) // i ha un figlio sinistro solo se Sx < heapsize
     {
         max = Sx;
     }
 
-    if (A[max] < A[Dx] && Dx <= heapsize)
+    if (A[max] < A[Dx] && Dx < heapsize)
     {
         max = Dx;
     }
