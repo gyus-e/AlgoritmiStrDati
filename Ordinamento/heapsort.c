@@ -1,9 +1,14 @@
 #include "array.h"
+#include "stack.h"
+#include "boolean.h"
 #include "heapsort.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 //Heapsort è un Selection sort che sfrutta un Maxheap per trovare piú rapidamente il massimo.
 //Maxheap: albero binario completo tale che, per ogni nodo x, il valore di x è maggiore o uguale al valore dei suoi figli. Il massimo sará la radice.
 //L'heap viene implementato come array.
+
 
 void HeapSort(int *A)
 {
@@ -13,7 +18,7 @@ void HeapSort(int *A)
     for (int i = N; i >= 1; i--)
     {
         //A[0] è sempre il massimo.
-        //Portando il massimo in posizione N, lo si pone alla fine.
+        //Portando il massimo in posizione M, lo si pone alla fine.
         Swap(A, 0, i);
         //Per mantenere la proprietá del Maxheap, si effettua heapify sul sottoarray non ordinato (di dimensione heapsize - 1).
         heapsize--;

@@ -2,11 +2,12 @@
 #define STACK_H_
 
 struct stack {
-    int dato;
+    int d;
     struct stack * next;
 };
-void push (struct stack * S, const int d);
-struct stack * pop (struct stack * S);
+
 int top (const struct stack * const S);
+struct stack * pop (struct stack * S);
+struct stack * push (struct stack * S, const int n);
 
 #endif

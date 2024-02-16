@@ -1,36 +1,30 @@
 #include "stack.h"
-#include "stdio.h"
-#include "stdlib.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-void push (struct stack * S, const int d) 
+int top (const struct stack * const S)
 {
-    while (S!= NULL) 
-    {
-        S = S->next;
-    } 
-    S = malloc (sizeof (struct stack)); 
-    S->dato = d; 
-    S->next = NULL;
+    if (S != NULL)
+        return S->d;
+    else return -1;
 }
 
 struct stack * pop (struct stack * S)
 {
-    struct stack * ret = NULL;
     if (S != NULL)
     {
-        ret = S->next;
-        free (S);
+        struct stack * tmp = S;
+        S = S->next;
+        free (tmp);
+        tmp = NULL;
     }
-    return ret;
+    return S;
 }
 
-int top (const struct stack * const S) {
-    if (S != NULL) 
-    {
-        return S->dato; 
-    } 
-    else 
-    {
-        return -1;
-    }
+struct stack * push (struct stack * S, const int n)
+{
+    struct stack * ret = malloc (sizeof (struct stack));
+    ret->d = n;
+    ret->next = S;
+    return ret;
 }

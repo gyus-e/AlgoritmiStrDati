@@ -1,8 +1,9 @@
 #include "array.h"
 #include "stack.h"
+#include "boolean.h"
 #include "quicksort.h"
-#include "stdio.h"
-#include "stdlib.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 void QuickSort(int *A, int p, int r)
 {
@@ -13,9 +14,6 @@ void QuickSort(int *A, int p, int r)
         QuickSort(A, q + 1, r);
     }
 }
-
-//ATTENZIONE
-//in certi casi partiziona va out of bounds per quanto riguarda j
 
 //Partiziona separa l'array in due parti, in base a un pivot
 //A sinistra vanno tutti gli elementi minori del pivot
@@ -54,49 +52,52 @@ int Partiziona(int *A, int p, int r)
     return j;
 }
 
-
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////
-
-void Quicksort_iterativo (int * A, int p, int r)
+void QuickSort_iterativo (int *A, int p, int r)
 {
-    int cp = p; int cr = r;
-    struct stack * p_stack = NULL; 
-    struct stack * r_stack = NULL;
-    bool start = true; 
-    int q;
+    bool start = true;
+    int last;
 
-    while (start == true || r_stack == NULL)
+    int cp = p, cr = r, q;
+    struct stack  *stk_p = NULL, *stk_r = NULL, *stk_q = NULL;
+
+    while (start || stk_p != NULL)
     {
-        if (start == true)
+        if (start)
         {
             if (cp < cr)
             {
                 q = Partiziona (A, cp, cr);
+                
+                stk_p = push (stk_p, cp);
+                stk_r = push (stk_r, cr);
+                stk_q = push (stk_q, q);
 
-                push (p_stack, cp); push (r_stack, cr);
                 cr = q;
             }
             else 
             {
+                last = cr;
                 start = false;
             }
         }
         else 
         {
-            cp = top (p_stack); cr = top (r_stack);
-            p_stack = pop (p_stack); r_stack = pop (r_stack);
+            cp = top (stk_p);
+            cr = top (stk_r);
+            q = top (stk_q);
 
-            if (cr == q)
+            if (last == q)
             {
-                push (p_stack, cp); push (r_stack, cr);
                 cp = q+1;
-
                 start = true;
+            }
+            else 
+            {
+                stk_p = pop (stk_p); 
+                stk_q = pop (stk_q); 
+                stk_r = pop (stk_r);
+                last = cr;
             }
         }
     }
 }
-
