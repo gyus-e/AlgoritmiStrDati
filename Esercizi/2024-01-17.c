@@ -8,11 +8,11 @@ Si scriva infine un algoritmo iterativo che simuli precisamente l'algoritmo rico
 ALG (T, l1, l2, p)
 {
     ret = 0;
-    if (T != NULL) //IMPORTANTE: il controllo l1 <= l2 è sbagliato, perché quando l1 > l2 l'intervallo è vuoto e bisogna sommare tutti i nodi pari
+    if (T != NULL)
     {
         ret += ALG (T->Sx, l1, l2, p+1);
         ret += ALG (T->Dx, l1, l2, p+1);
-        if ((T->d % 2 == 0) && !(l1 <= p <= l2))
+        if ((T->d % 2 == 0) && !(l1 <= p && p <= l2))
         {
             ret += T->d;
         }
@@ -51,7 +51,7 @@ ALG_ITERATIVO (T, l1, l2, p)
             //ret += pop (stack_ret);
             cT = pop (stack_T);
             cp = cp - 1;
-            if (last != cT->Dx)
+            if (last != cT->Dx && cT->Dx != NULL) //bisogna controllare che cT->Dx non sia NULL per fare la chiamata a destra
             {
                 //push (stack_ret, ret);
                 push (stack_T, cT);

@@ -6,7 +6,6 @@
 //Esempio: se k=2 e l'albero contiene 1,4,5,7,29,30,56,91 si cancellano 4,7,30,91 cioé i valori la cui posizione nell'ordinamento è un multiplo di 2.
 
 #include "alberi.h"
-#include "alberiRicerca.h"
 #include "stdio.h"
 
 //Si puó effettuare una visita in order per ottenere la posizione, posto di conoscere il numero di nodi giá visitati (sará il nostro valore di ritorno).
@@ -58,4 +57,52 @@ struct Tree * DeletePosMultipli_Root (struct Tree * T, const unsigned int k)
         }
     }
     return T;
+}
+
+struct Tree * DeleteRoot (struct Tree * T)
+{
+    struct Tree * toDelete = T;
+    if (T->left == NULL)
+    {
+        T = T->right;
+    }
+    else if (T->right == NULL)
+    {
+        T = T->left;
+    }
+    else 
+    {
+        toDelete = StaccaMin (T->left, T);
+        T->key = toDelete->key;
+    }
+    free (toDelete);
+    toDelete = NULL;
+    return T;
+}
+
+struct Tree * StaccaMin (struct Tree * T, struct Tree * Pred)
+{
+    if (T == NULL)
+    {
+        return NULL;
+    }
+    else if (T->left != NULL)
+    {
+        return StaccaMin (T->left, T);
+    }
+    else 
+    {
+        if (Pred != NULL)
+        {
+            if (T == Pred->left)
+            {
+                Pred->left = T->right;
+            }
+            else if (T == Pred->right)
+            {
+                Pred->right = T->right;
+            }
+        }
+        return T;
+    }
 }
