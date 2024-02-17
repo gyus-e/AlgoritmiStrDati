@@ -1,4 +1,5 @@
-#include "stdio.h"
+#include <stdio.h>
+#include <stdlib.h>
 #include "alberi.h"
 #include "queue.h"
 
@@ -12,10 +13,10 @@ void Print_BFS (struct Tree * T)
     Q = enqueue(Q, T);
     while (Q != NULL)
     {
-        printf("%d ", getHead(Q)->key); //visita: stampa
+        printf("%d ", head(Q)->key); //visita: stampa
         Q = enqueue (Q, T->left);
         Q = enqueue (Q, T->right);
-        Q = dequeue (Q);
+        dequeue (Q);
     }
 }
 

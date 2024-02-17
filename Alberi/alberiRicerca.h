@@ -1,5 +1,3 @@
-#include "alberi.h"
-
 #ifndef ALBERIRICERCA_H_
 #define ALBERIRICERCA_H_
 
@@ -15,7 +13,5 @@ struct Tree * DeleteTR_Root (struct Tree * T, TIPO k); //Necessaria per usare De
 //funzioni ausiliarie di Delete
 struct Tree * DeleteRoot (struct Tree * T);
 struct Tree * StaccaMin (struct Tree * T, struct Tree * Pred);
-
-
 
 #endif
