@@ -75,9 +75,9 @@ void Init_DFS (struct Grafo * G)
 }
 
 //Costo lineare sulla dimensione del grafo (vertici + archi)
-struct Stack ** DFS (struct Grafo * G)
+struct Stack * DFS (struct Grafo * G)
 {
-    struct Stack ** DFS_Forest = malloc (G->V_Sz * sizeof(struct Stack *));
+    struct Stack * DFS_Forest = NULL;
     
     Init_DFS (G);
 
@@ -85,7 +85,7 @@ struct Stack ** DFS (struct Grafo * G)
     {
         if (Color[i] == white) //se non è stato visitato
         {
-            DFS_Forest [i] = DFS_Visit (G, G->V[i]); //DFS_Visit sul vertice
+            DFS_Forest = DFS_Visit (G, G->V[i]); //DFS_Visit sul vertice
         }
     }
 
@@ -306,20 +306,21 @@ struct Grafo * Trasposto (struct Grafo * G)
 
 //Usiamo una DFS sul grafo trasposto che seleziona le sorgenti in modo da restituire esattamente un albero per ogni componente fortemente connessa.
 
-struct Stack ** DFS_trasposto (struct Grafo * G_trasposto, struct Stack ** Foresta_DF)
+struct Stack ** DFS_trasposto (struct Grafo * G_trasposto, struct Stack * Foresta_DF)
 {
-    struct Stack ** CFC_Graph = malloc (G_trasposto->V_Sz * sizeof (struct Stack *));
+    struct Stack * CFC_Graph = NULL;
     Init_DFS (G_trasposto);
 
     for (int i = 0; Foresta_DF [i] != NULL; i++) //Le sorgenti sono selezionate nell'ordine in cui appaiono nella foresta depth-first
     {
         struct Vertice * S = top (Foresta_DF);
+        Foresta_DF = pop (Foresta_DF);
         if (Color [S->key] == white)
         {
-            //Nell'albero DF vengono salvati i vertici raggiunti dalla sorgente nel trasposto (quindi quelli che raggiungono la sorgente nel grafo di partenza)
-            //Ma poiché sono selezionati nella foresta depth-first, stiamo automaticamente scartando quelli che non raggiungono la sorgente nel trasposto.
-            //Quindi tutti i nodi di quest'albero saranno mutualmente raggiungibili, formando una componente fortemente connessa. 
-            CFC_Graph [i] = DFS_trasposto_visit (G_trasposto, S); 
+            //Nello stack vengono salvati i vertici raggiunti dalla sorgente nel trasposto (quindi quelli che raggiungono la sorgente nel grafo di partenza)
+            //Ma poiché sono selezionati in ordine inverso, resteremo sempre nello stesso albero, radicato nella sorgente.
+            //Quindi tutti i nodi trovati saranno mutualmente raggiungibili, formando una componente fortemente connessa. 
+            CFC_Graph = DFS_trasposto_visit (G_trasposto, S); 
         }
     }
     

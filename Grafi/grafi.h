@@ -42,7 +42,7 @@ void BFS (struct Grafo * G, struct Vertice * S); //Breadth First Search: Visita 
 void StampaPercorsoMinimo (struct Grafo * G, struct Vertice * S, struct Vertice * x);
 
 void Init_DFS (struct Grafo * G);
-struct Stack ** DFS (struct Grafo * G);
+struct Stack * DFS (struct Grafo * G);
 struct Stack * DFS_Visit (struct Grafo * G, struct Vertice * S);
 //ogni volta che chiama DFS_Visit su un vertice sorgente, questo restituisce un albero che contiene tutti i nodi raggiungibili dalla sorgente
 //L'insieme di tutti gli alberi generati da una DFS si chiama foresta depth-first.
@@ -127,8 +127,10 @@ struct Stack * OrdinamentoTopologicoDFS_Visit (struct Grafo * G, struct Vertice 
 //Ogni vertice raggiunto dalla sorgente nel grafo trasposto, raggiunge la sorgente nel grafo di partenza.
 //Le componenti fortemente connesse del grafo trasposto sono le stesse del grafo di partenza.
 struct Grafo * Trasposto (struct Grafo * G);
-//Usiamo una DFS sul grafo trasposto che seleziona le sorgenti in modo da restituire esattamente un albero per ogni componente fortemente connessa.
-struct Stack ** DFS_trasposto (struct Grafo * G_trasposto, struct Stack ** Foresta_DF);
+//Nella DFS, gli archi di attraversamento vanno verso alberi giá esplorati.
+//Ma sul grafo trasposto andrebbero verso alberi non ancora esplorati, quindi una normale DFS sul trasposto non permette di trovare le componenti fortemente connesse.
+//Usiamo una DFS speciale sul grafo trasposto che seleziona le sorgenti in ordine inverso rispetto a come sono state trovate dalla DFS.
+struct Stack * DFS_trasposto (struct Grafo * G_trasposto, struct Stack * Foresta_DF);
 struct Stack * DFS_trasposto_visit (struct Grafo * G_trasposto, struct Vertice * S);
 
 struct Stack ** ComponenteFortementeConnessa (struct Grafo * G);
