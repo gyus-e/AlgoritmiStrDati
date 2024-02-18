@@ -2,17 +2,17 @@
 #include "stdio.h"
 #include "stdlib.h"
 
-void fill (int * const A)
+void fill (int * const A, const int n)
 {
-    for (int i = 0; i < N; i++)
+    for (int i = 0; i < n; i++)
     {
         A[i] = rand () % 100;
     }
 }
 
-void printArray (const int * const A)
+void printArray (const int * const A, const int n)
 {
-    for (int i = 0; i < N; i++)
+    for (int i = 0; i < n; i++)
     {
         printf("%d ", A[i]);
     }

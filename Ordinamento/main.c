@@ -19,8 +19,8 @@ int main ()
         printf("Generating new array:\n");
         int A [N];
         srand (time(0));
-        fill (A);
-        printArray (A);
+        fill (A, N);
+        printArray (A, N);
 
         printf ("Press 0 for HeapSort\n"
         "Press 1 for QuickSort\n"
@@ -37,7 +37,7 @@ int main ()
         switch (in)
         {
             case 0:
-            HeapSort (A);
+            HeapSort (A, N);
             break;
 
             case 1:
@@ -61,7 +61,7 @@ int main ()
         }
 
         printf("Sorted array:\n");
-        printArray (A); 
+        printArray (A, N); 
         printf("\n\n");
     }
 }

@@ -3,8 +3,8 @@
 
 #define N 20
 
-void printArray (const int * const A);
-void fill (int * const A);
+void printArray (const int * const A, const int n);
+void fill (int * const A, const int n);
 void Swap(int * const A, const unsigned int i, const unsigned int j);
 
 #endif
