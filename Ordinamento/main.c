@@ -11,6 +11,8 @@
 #include "time.h"
 
 
+#define N 21
+
 int main ()
 {
     unsigned int in = 0;

@@ -18,7 +18,7 @@ void MergeSort (int * A, int l, int r)
 
 void Merge (int * A, int l, int q, int r)
 {
-    int * B = malloc (N * sizeof (int));
+    int * B = malloc (r+1 * sizeof (int));
     int i = l;
     int j = q+1;
     int k = l;
