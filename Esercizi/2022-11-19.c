@@ -1,108 +1,138 @@
+/*
 //Esame 19/11/2022
 
-//Dati in ingresso un albero binario di ricerca e un intero positivo k
-//Scrivere un algoritmo ricorsivo che cancelli tutti i nodi che si trovano in posizioni multiple di k nell'ordinamento totale delle chiavi dell'albero.
+Si scriva un algoritmo ricorsivo che, dati in ingresso un albero  binario di ricerca T e un intero positivo k,
+cancelli da T tutti i nodi che si trovano in posizioni multiple di k nell'ordinamento totale delle chiavi dell'albero.
+Tale algoritmo dovrá essere efficiente e non far uso né di variabili globali dné di parametri passati per riferimento.
+Infine, si scriva un algoritmo iterativo che simuli precisamente l'algoritmo ricorsivo di cui sopra.
+*/
 
-//Esempio: se k=2 e l'albero contiene 1,4,5,7,29,30,56,91 si cancellano 4,7,30,91 cioé i valori la cui posizione nell'ordinamento è un multiplo di 2.
-
-#include "alberi.h"
-#include "stdio.h"
-
-//Si puó effettuare una visita in order per ottenere la posizione, posto di conoscere il numero di nodi giá visitati (sará il nostro valore di ritorno).
-//Ma bisogna cancellare in postorder per non perdere la posizione originale dei nodi.
-//Poiché il valore di ritorno è il numero di nodi visitati, la cancellazione deve essere implementata come in DeleteTR.
-unsigned int DeletePosMultipli (struct Tree * T, struct Tree * Pred, const unsigned int k, unsigned int visited)
-{
+//Si assume che pos venga inizialmente passata uguale a 0;
+Alg (T, k, pos)
+{ 
+    ret = pos;
     if (T != NULL)
     {
-        unsigned int pos = DeletePosMultipli (T->left, T, k, visited); //I nodi giá visitati prima di arrivare a T, piú i nodi a sinistra di T che saranno stati visitati al ritorno di questa chiamata.
+        //La visita a sinistra restituisce il numero di nodi precedenti a T
+        ret = Alg (T->Sx, k, pos);
 
-        //order: trova la posizione del nodo corrente
-        pos = pos + 1;
+        //In order, si aggiorna la posizione di T
+        pos = ret + 1;
         
-        visited = DeletePosMultipli (T->right, T, k, pos); //Ora il numero di nodi visitati è dato dalla posizione. Ma al termine voglio restituire anche quelli che saranno stati visitati al ritorno dalla chiamata a destra.
+        //La visita a destra fornisce il valore di ritorno per il padre di T, cioé
+        //il numero di nodi precedenti di Pred (se T è il figlio sinistro)
+        //il numero di nodi esplorati da Pred (se T è il figlio destro)
+        ret = Alg (T->Dx, k, pos);
         
-        //postorder: elimina i nodi
-        if (pos % k == 0)
-        {
-            struct Tree * newT = DeleteRoot (T);
-            if (Pred != NULL)
-            {
-                if (Pred->left == T)
-                {
-                    Pred->left = newT;
-                }
-                else if (Pred->right == T)
-                {
-                    Pred->right = newT;
-                }
-            }
-        }
-    }
-    return visited;
-}
-//Questo algoritmo, come il Delete con tail recursion, non restituisce l'albero modificato se gli viene passata la radice.
-//Quindi serve una funzione dedicata per la radice, che chiamerá l'algoritmo ricorsivo sui sottoalberi figli.
-struct Tree * DeletePosMultipli_Root (struct Tree * T, const unsigned int k)
-{
-    if (T != NULL)
-    {
-        unsigned int pos = DeletePosMultipli (T->left, T, k, 0); //restituisce il numero di nodi visitati
-        pos = pos + 1; //visita in order: trova la posizione del nodo corrente
-        DeletePosMultipli (T->right, T, k, pos); //non ci interessa salvare il valore di ritorno
-
+        //In post order, si cancella T
         if (pos % k == 0)
         {
             T = DeleteRoot (T);
         }
     }
-    return T;
+    return ret;
 }
 
-struct Tree * DeleteRoot (struct Tree * T)
+Alg_Iterativo (T, k, pos)
 {
-    struct Tree * toDelete = T;
-    if (T->left == NULL)
+    cT = T; 
+    cpos = pos;
+    stk_T = NULL;
+    start = true;
+    last = NULL;
+
+    while (start || stk_T != NULL)
     {
-        T = T->right;
+        if (start)
+        {
+            ret = cpos;
+            if (cT != NULL)
+            {
+                push (cT, stk_T);
+                cT = cT->Sx;
+            }
+            else //caso base 
+            {
+                last = cT;
+                start = false;
+            }
+        }
+        else 
+        {
+            cT = top (stk_T);
+            
+           
+            //Ponendo come condizione (last != cT->Dx), se sono in una foglia, l'if non viene eseguito perché last = cT->Dx = NULL
+            //Alcune delle operazioni vanno eseguite anche se cT->Dx == NULL
+            //Devo discriminare in un altro modo:
+            if (last == cT->Sx) //Assumo che, se last == NULL, sto tornando da sinistra         
+            {
+                //queste operazioni vanno eseguite anche se cT->Dx == NULL
+                cpos = ret + 1;
+                //Devo scendere a destra se cT->Dx != NULL
+                if (cT->Dx != NULL) 
+                {
+                    cT = cT->Dx;
+                    start = true;
+                }
+                //Ora posso eseguire le istruzioni in post-order
+                if (cpos % k == 0)
+                {
+                    cT = DeleteRoot (cT);
+                    last = cT;
+                    pop (stk_T);
+                }
+            }
+            else //last != NULL
+            {
+                if (cpos % k == 0)
+                {
+                    cT = DeleteRoot (cT);
+                    last = cT;
+                    pop (stk_T);
+                }
+            }
+        }
     }
-    else if (T->right == NULL)
+}
+
+DeleteRoot (T)
+{
+    if (T->Sx == NULL)
     {
-        T = T->left;
+        toDelete = T;
+        T = T->Dx;
+    } 
+    else if (T->Dx == NULL)
+    {
+        toDelete = T;
+        T = T->Sx;
     }
     else 
     {
-        toDelete = StaccaMin (T->left, T);
+        toDelete = StaccaMin (T->Dx, T);
         T->key = toDelete->key;
     }
     free (toDelete);
-    toDelete = NULL;
     return T;
 }
 
-struct Tree * StaccaMin (struct Tree * T, struct Tree * Pred)
+StaccaMin (T, Pred)
 {
-    if (T == NULL)
+    if (T->Sx != NULL)
     {
-        return NULL;
+        return StaccaMin (T->Sx, T);
     }
-    else if (T->left != NULL)
+    if (Pred != NULL)
     {
-        return StaccaMin (T->left, T);
-    }
-    else 
-    {
-        if (Pred != NULL)
+        if (T != Pred->Dx)
         {
-            if (T == Pred->left)
-            {
-                Pred->left = T->right;
-            }
-            else if (T == Pred->right)
-            {
-                Pred->right = T->right;
-            }
+            Pred->Sx = T->Dx;
         }
-        return T;
+        else
+        {
+            Pred->Dx = T->Dx;
+        }
     }
+    return T;
 }
